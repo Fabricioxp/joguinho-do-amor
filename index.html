@@ -54,7 +54,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 30px;
+            padding: 25px;
             text-align: center;
             z-index: 30;
         }
@@ -78,25 +78,26 @@
         }
         h1 {
             color: var(--primary);
-            font-size: 26px;
+            font-size: 24px;
             margin-bottom: 15px;
             margin-top: 0;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
         }
         .cutscene-title {
             color: var(--primary);
-            font-size: 22px;
+            font-size: 20px;
             font-weight: bold;
             background: rgba(255, 255, 255, 0.9);
             padding: 8px 20px;
             border-radius: 15px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            margin-top: 10px;
         }
         p {
             color: var(--text);
-            font-size: 15px;
-            line-height: 1.6;
-            margin-bottom: 25px;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 20px;
         }
         button {
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
@@ -118,41 +119,41 @@
             position: absolute;
             background: white;
             border: 2px solid var(--primary);
-            border-radius: 15px;
-            padding: 8px 14px;
+            border-radius: 12px;
+            padding: 6px 12px;
             font-weight: bold;
-            font-size: 13px;
+            font-size: 12px;
             color: var(--primary);
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
             pointer-events: none;
             display: none;
             text-align: center;
             z-index: 40;
-            max-width: 190px;
-            transform: translate(-50%, -100%);
+            max-width: 160px;
+            transform: translate(-50%, -115%);
         }
         #dialogue-box::after {
             content: '';
             position: absolute;
             top: 100%;
             left: 50%;
-            margin-left: -8px;
-            border: 8px solid transparent;
+            margin-left: -6px;
+            border: 6px solid transparent;
             border-top-color: white;
         }
         #cutscene-text {
-            font-size: 17px;
+            font-size: 15px;
             font-weight: bold;
             color: var(--primary);
             background: rgba(255, 255, 255, 0.95);
             border: 2px solid var(--primary);
             border-radius: 20px;
-            padding: 15px;
+            padding: 12px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-            margin-bottom: 20px;
+            margin-bottom: 30px;
         }
 
-        /* INTERFACE SCROLL TOTAL DO ENVELOPE */
+        /* INTERFACE SCROLL DO ENVELOPE */
         #envelope-screen {
             background: #fffafa;
             z-index: 100;
@@ -161,7 +162,7 @@
             justify-content: flex-start;
             align-items: center;
             overflow-y: auto;
-            padding: 30px 20px 120px 20px;
+            padding: 25px 15px 110px 15px;
         }
 
         .envelope-wrapper {
@@ -174,9 +175,9 @@
 
         .envelope-box {
             position: relative;
-            width: 290px;
-            height: 180px;
-            margin: 25px 0;
+            width: 260px;
+            height: 160px;
+            margin: 20px 0;
             perspective: 1000px;
             cursor: pointer;
         }
@@ -187,15 +188,15 @@
             background-color: #ffccd5;
             border: 2px solid var(--primary);
             border-radius: 0 0 15px 15px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
             z-index: 1;
         }
         .envelope-flap {
             position: absolute;
             top: 0; left: 0; width: 0; height: 0;
-            border-left: 145px solid transparent;
-            border-right: 145px solid transparent;
-            border-top: 90px solid #ffb3c1;
+            border-left: 130px solid transparent;
+            border-right: 130px solid transparent;
+            border-top: 80px solid #ffb3c1;
             transform-origin: top;
             transition: transform 0.6s ease;
             z-index: 5;
@@ -203,10 +204,10 @@
         .envelope-flap::after {
             content: '';
             position: absolute;
-            top: -93px; left: -145px; width: 0; height: 0;
-            border-left: 145px solid transparent;
-            border-right: 145px solid transparent;
-            border-top: 91px solid var(--primary);
+            top: -83px; left: -130px; width: 0; height: 0;
+            border-left: 130px solid transparent;
+            border-right: 130px solid transparent;
+            border-top: 81px solid var(--primary);
             z-index: -1;
         }
         .envelope-box.open .envelope-flap {
@@ -215,8 +216,8 @@
         }
         .heart-seal {
             position: absolute;
-            top: 65px; left: 125px;
-            font-size: 36px;
+            top: 55px; left: 112px;
+            font-size: 32px;
             z-index: 6;
             pointer-events: none;
             transition: opacity 0.3s;
@@ -225,32 +226,32 @@
             opacity: 0;
         }
 
-        /* FOLHA PAUTADA GIGANTE */
+        /* FOLHA PAUTADA DE CADERNO */
         #letter {
             width: 100%;
-            max-width: 370px;
+            max-width: 380px;
             background: #fff;
             background-image: linear-gradient(#e8f1f5 1px, transparent 1px);
-            background-size: 100% 26px;
+            background-size: 100% 24px;
             border: 1px solid #ddd;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
             border-radius: 8px;
-            padding: 30px 20px 30px 45px;
-            margin-top: 20px;
+            padding: 25px 15px 25px 40px;
+            margin-top: 15px;
             position: relative;
             display: none;
         }
         #letter::before {
             content: '';
             position: absolute;
-            top: 0; left: 35px; width: 1px; height: 100%;
+            top: 0; left: 30px; width: 1px; height: 100%;
             background-color: #ff9999;
         }
         #letter p {
             margin: 0;
             color: #333;
-            font-size: 14px;
-            line-height: 26px;
+            font-size: 13px;
+            line-height: 24px;
             font-family: 'Courier New', Courier, monospace;
             text-align: left;
             word-wrap: break-word;
@@ -265,18 +266,19 @@
             transform: translateX(-50%);
             width: 100%;
             max-width: 430px;
-            padding: 20px;
+            padding: 15px;
             background: rgba(255, 255, 255, 0.96);
             display: flex;
             justify-content: center;
-            gap: 15px;
+            gap: 10px;
             border-top: 1px solid #ffe4e8;
             z-index: 110;
         }
         .fixed-footer button {
             flex: 1;
             margin: 0;
-            padding: 13px 10px;
+            padding: 12px 5px;
+            font-size: 14px;
         }
     </style>
 </head>
@@ -288,7 +290,7 @@
         <!-- Tela de Introdução -->
         <div id="intro-screen" class="screen">
             <h1>Ei, minha linda! ❤️</h1>
-            <p>Alguns caras folgados estão tentando se aproximar! <br><br><strong>Toque ou clique na tela na direção deles para jogar um belo 🖕 bem na cara deles!</strong><br><br>Você precisa afastar 20 homens. Eu fico bem ali no canto cuidando de você. Não deixe eles encostarem 3 vezes!</p>
+            <p>Alguns caras folgados estão tentando se aproximar! <br><br><strong>Toque na tela na direção deles para jogar um belo 🖕 bem na cara deles!</strong><br><br>Você precisa afastar 20 homens. Eu fico cuidando de você ali no canto. Não deixe eles encostarem 3 vezes!</p>
             <button id="start-btn">Começar Jogo 🌸</button>
         </div>
 
@@ -317,7 +319,6 @@
             <div class="envelope-wrapper">
                 <h1>para minha princesa</h1>
                 
-                <!-- Clicar em qualquer parte dessa div abre o envelope -->
                 <div class="envelope-box" id="myEnvelope" onclick="abrirEnvelope()">
                     <div class="envelope-flap"></div>
                     <div class="heart-seal" id="heartSeal">❤️</div>
@@ -354,6 +355,14 @@
             const container = document.getElementById('game-container');
             canvas.width = container.clientWidth;
             canvas.height = container.clientHeight;
+            
+            // Recalcula posições proporcionais caso mude o tamanho dinamicamente
+            if (player && boyfriend && gameState === 'PLAYING') {
+                player.x = canvas.width * 0.5;
+                player.y = canvas.height * 0.4;
+                boyfriend.x = canvas.width * 0.15;
+                boyfriend.y = canvas.height * 0.85;
+            }
         }
         window.addEventListener('resize', resizeCanvas);
 
@@ -441,7 +450,7 @@
                 this.x = x;
                 this.y = y;
                 this.radius = 16;
-                this.speed = 1.6; 
+                this.speed = 1.7; 
                 this.type = type;
                 this.name = type === 'homem' ? 'Homem 🚫' : 'Guria 🚫';
                 this.color = type === 'homem' ? '#54a0ff' : '#ff9ff3';
@@ -474,7 +483,7 @@
                 this.x = x;
                 this.y = y;
                 this.radius = 12;
-                this.speed = 15; 
+                this.speed = 16; 
                 let dx = targetX - this.x;
                 let dy = targetY - this.y;
                 let dist = Math.sqrt(dx * dx + dy * dy);
@@ -499,8 +508,9 @@
             lives = 3;
             ultimoMilestoneFala = 0;
             
-            player = new PlayerCharacter(canvas.width / 2, canvas.height / 2 - 40, 'Você 👸', '#ff758c');
-            boyfriend = new PlayerCharacter(70, canvas.height - 60, 'Namorado 👦', '#38b000');
+            // Posições baseadas estritamente em % da tela para garantir visualização perfeita no celular
+            player = new PlayerCharacter(canvas.width * 0.5, canvas.height * 0.4, 'Você 👸', '#ff758c');
+            boyfriend = new PlayerCharacter(canvas.width * 0.15, canvas.height * 0.85, 'Namorado 👦', '#38b000');
             
             enemies = [];
             bullets = [];
@@ -625,12 +635,12 @@
                 if (cutsceneFase === 0 && cutsceneTimer === 20) {
                     for (let i = 0; i < 100; i++) {
                         let angulo = Math.random() * Math.PI * 2;
-                        let raioSpawn = Math.max(canvas.width, canvas.height) + 50; 
+                        let raioSpawn = Math.max(canvas.width, canvas.height) + 60; 
                         let ex = boyfriend.x + Math.cos(angulo) * raioSpawn;
                         let ey = boyfriend.y + Math.sin(angulo) * raioSpawn;
                         
                         let novaMulher = new Enemy(ex, ey, 'mulher');
-                        novaMulher.speed = 1.1; 
+                        novaMulher.speed = 1.2; 
                         enemies.push(novaMulher);
                     }
                     cutsceneFase = 1;
@@ -719,7 +729,7 @@
             myEnvelope.classList.add('open');
             setTimeout(() => {
                 letter.style.display = 'block';
-                envelopeScreen.scrollTo({ top: 180, behavior: 'smooth' });
+                envelopeScreen.scrollTo({ top: 160, behavior: 'smooth' });
             }, 600);
         }
 
