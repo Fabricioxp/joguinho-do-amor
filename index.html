@@ -116,7 +116,6 @@
             transform: scale(0.96);
         }
         
-        /* COLOQUEI AS FRASES EM CIMA DELE DE NOVO - PEQUENA PARA NÃO ATRAPALHAR */
         #dialogue-box {
             position: absolute;
             background: white;
@@ -157,7 +156,6 @@
             margin-bottom: 40px;
         }
 
-        /* TELA DE ENVELOPE INTEIRA EM SCROLL */
         #envelope-screen {
             background: #fffafa;
             z-index: 100;
@@ -227,7 +225,6 @@
             opacity: 0;
         }
 
-        /* FOLHA DE CADERNO */
         #letter {
             width: 100%;
             max-width: 380px;
@@ -286,37 +283,31 @@
 <body>
 
     <div id="game-container">
-        <!-- Caixa de Diálogo Em Cima do Boneco -->
         <div id="dialogue-box"></div>
 
-        <!-- Tela de Introdução -->
         <div id="intro-screen" class="screen">
             <h1>Ei, minha linda! ❤️</h1>
             <p>Alguns caras folgados estão tentando se aproximar! <br><br><strong>Toque na tela na direção deles para jogar um belo 🖕 bem na cara deles!</strong><br><br>Você precisa afastar 20 homens. Eu fico cuidando de você ali no canto. Não deixe eles encostarem 3 vezes!</p>
             <button id="start-btn">Começar Jogo 🌸</button>
         </div>
 
-        <!-- Tela de Game Over -->
         <div id="gameover-screen" class="screen hide">
             <h1>Poxa, meu amor! 💔</h1>
             <p>Eles chegaram muito perto... Mas eu tenho total confiança na sua mira! Vamos tentar de novo juntinhos?</p>
             <button id="retry-btn">Tentar Novamente 🔄</button>
         </div>
 
-        <!-- Tela de Vitória Temporária -->
         <div id="victory-screen" class="screen hide">
             <h1>Você conseguiu! 😍🎉</h1>
             <p>Você colocou todos os 20 no devido lugar deles! Que orgulho da minha princesa. Agora, senta aí e olha como eu resolvo as coisas por aqui...</p>
             <button id="cutscene-btn">Ver Namorado em Ação 😎</button>
         </div>
 
-        <!-- Tela de Overlay da Cutscene -->
         <div id="cutscene-screen" class="screen hide">
             <div class="cutscene-title">Defendendo Meu Amor... 🔥</div>
             <div id="cutscene-text">👀 Espera só para ver as gurias vindo...</div>
         </div>
 
-        <!-- Tela do Envelope -->
         <div id="envelope-screen" class="screen hide">
             <div class="envelope-wrapper">
                 <h1>para minha princesa</h1>
@@ -327,11 +318,10 @@
                     <div class="envelope-back"></div>
                 </div>
 
-                <!-- Folha Pautada Caderno -->
                 <div id="letter">
                     <p>
                         Esse joguinho meio bobo foi só para te mostrar que o meu desejo é deixar o nosso amor sempre assim: leve e gostoso. Desde que você chegou, a minha vida ganhou muito mais cor e alegria. Agora, sim, tenho os melhores motivos do mundo para viver e para fazer você se apaixonar por mim um pouquinho mais todos os dias.<br><br>
-                        Estou amando cada conversa nossa, cada risada, cada "bom dia" e "boa noite". Tudo tem sido maravilhoso! Não vejo a hora de podermos estar bem juntinhos, demonstrando esse amor com toques físicos. Cada beijinho vai ser incrivelmente especial. Já fico me pegando pensando no dia em que vou conhecer a sua família, conversar com a sua mãe sobre você, assistir a filmes e bater um papo com o seu pai. Também quero muito que você conheça a minha família; eles são super de boa e tenho certeza de que você vai amar a minha irmã. Quero o nosso moment, a nossa rotina e conhecer vários lugares ao seu lado.<br><br>
+                        Estou amando cada conversa nossa, cada risada, cada "bom dia" e "boa noite". Tudo tem sido maravilhoso! Não vejo a hora de podermos estar bem juntinhos, demonstrando esse amor com toques físicos. Cada beijinho vai ser incrivelmente especial. Já fico me pegando pensando no dia em que vou conhecer a sua família, conversar com a sua mãe sobre você, assistir a filmes e bater um papo com o seu pai. Também quero muito que você conheça a minha família; eles são super de boa e tenho certeza de que você vai amar a minha irmã. Quero o nosso momento, a nossa rotina e conhecer vários lugares ao seu lado.<br><br>
                         Estamos tendo muita paciência para que esses grandes dias cheguem, mas sei que, quando tudo der certo, cada segundo dessa espera terá valido a pena. Não precisa chorar lendo isso, tá? Nem é nada tão emocionante assim, e o joguinho foi só para você distrair um pouco, haha!<br><br>
                         Sabe, eu me impressiono cada vez mais com a sua maturidade e com a forma como você se desapega de pessoas que não agregam em nada no nosso relacionamento. Você é uma mulher de muito caráter, e tenho a total certeza de que os nossos futuros filhos terão um orgulho imenso da mãe maravilhosa que têm. Admiro cada detalhe em você. Você é a garota mais linda que já vi: seus olhinhos, sua boca, seu cabelo e esse seu jeitinho único de demonstrar amor e não ter medo de se entregar.<br><br>
                         Eu amo muito você, minha princesa. 🥰
@@ -339,7 +329,6 @@
                 </div>
             </div>
 
-            <!-- Botões Fixos -->
             <div class="fixed-footer">
                 <button id="close-envelope-btn" style="background: #777;">Fechar ↩️</button>
                 <button id="restart-game-btn" style="background: #38b000;">Jogar De Novo 🎮</button>
@@ -529,23 +518,15 @@
             spawnTimer = 0;
         }
 
-        // TRAVA ANTIQUEDA: SE PUSH PARA FORA DA BORDA, PUXA DE VOLTA
         function posicionarFala() {
             if (gameState !== 'PLAYING') return;
             const rect = canvas.getBoundingClientRect();
             
-            // Posição ideal: em cima da cabeça do namorado
             let posX = (boyfriend.x / canvas.width) * rect.width;
             let posY = (boyfriend.y / canvas.height) * rect.height - 35;
             
-            // Impede que o balão suma pelo lado esquerdo (mínimo de 85px de margem)
-            if (posX < 85) {
-                posX = 85;
-            }
-            // Impede que suma pelo lado direito
-            if (posX > rect.width - 85) {
-                posX = rect.width - 85;
-            }
+            if (posX < 85) posX = 85;
+            if (posX > rect.width - 85) posX = rect.width - 85;
 
             dialogueBox.style.left = `${posX}px`;
             dialogueBox.style.top = `${posY}px`;
@@ -645,22 +626,29 @@
                 boyfriend.draw();
                 cutsceneTimer++;
 
+                // CORREÇÃO: Nascer nas bordas de dentro da tela para você ver tudo acontecendo
                 if (cutsceneFase === 0 && cutsceneTimer === 20) {
-                    for (let i = 0; i < 100; i++) {
-                        let angulo = Math.random() * Math.PI * 2;
-                        let raioSpawn = Math.max(canvas.width, canvas.height) + 60; 
-                        let ex = boyfriend.x + Math.cos(angulo) * raioSpawn;
-                        let ey = boyfriend.y + Math.sin(angulo) * raioSpawn;
+                    for (let i = 0; i < 40; i++) {
+                        let ex, ey;
+                        // Distribui as gurias ao redor da tela visível do celular
+                        if (Math.random() < 0.5) {
+                            ex = Math.random() < 0.5 ? 10 : canvas.width - 10;
+                            ey = Math.random() * canvas.height;
+                        } else {
+                            ex = Math.random() * canvas.width;
+                            ey = Math.random() < 0.5 ? 10 : canvas.height - 10;
+                        }
                         
                         let novaMulher = new Enemy(ex, ey, 'mulher');
-                        novaMulher.speed = 1.2; 
+                        novaMulher.speed = 1.4; // Velocidade boa para dar tempo de assistir
                         enemies.push(novaMulher);
                     }
                     cutsceneFase = 1;
                 }
 
                 if (cutsceneFase === 1) {
-                    if (cutsceneTimer % 2 === 0 && enemies.length > 0) {
+                    // Atira se as gurias estiverem vivas
+                    if (cutsceneTimer % 4 === 0 && enemies.length > 0) {
                         let alvoAleatorio = enemies[Math.floor(Math.random() * enemies.length)];
                         bullets.push(new Bullet(boyfriend.x, boyfriend.y, alvoAleatorio.x, alvoAleatorio.y));
                     }
@@ -678,7 +666,8 @@
                         let dy = bullets[i].y - enemies[j].y;
                         let dist = Math.sqrt(dx * dx + dy * dy);
 
-                        if (dist < enemies[j].radius + 12) {
+                        // CORREÇÃO: Morrem perto (distância menor), mas sem encostar na colisão do boneco
+                        if (dist < enemies[j].radius + 15) {
                             enemies.splice(j, 1);
                             bullets.splice(i, 1);
                             break;
