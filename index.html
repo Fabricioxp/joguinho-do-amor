@@ -104,6 +104,7 @@
             cursor: pointer;
             box-shadow: 0 5px 15px rgba(255, 77, 109, 0.4);
             z-index: 15;
+            margin: 5px;
         }
         #dialogue-box {
             position: absolute;
@@ -144,67 +145,136 @@
             margin-bottom: 20px;
         }
 
-        /* ESTILOS DO ENVELOPE E DA CARTA ANIMADA */
+        /* TELA DO ENVELOPE REALISTA */
         #envelope-screen {
             background: rgba(255, 240, 240, 0.98);
             z-index: 30;
         }
-        .envelope-wrapper {
+        
+        .envelope-container {
             position: relative;
-            width: 200px;
-            height: 140px;
-            background-color: #ffb3c1;
-            border: 3px solid #ff4d6d;
-            border-radius: 0px 0px 10px 10px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-            margin-bottom: 30px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            width: 280px;
+            height: 180px;
+            margin-bottom: 40px;
+            perspective: 1000px;
         }
-        /* Selo de coração no envelope */
-        .envelope-wrapper::after {
-            content: '❤️';
-            font-size: 28px;
+
+        /* Base do Envelope */
+        .envelope-back {
             position: absolute;
-            z-index: 5;
-            top: 35%;
+            width: 100%;
+            height: 100%;
+            background-color: #ffccd5;
+            border: 2px solid #ff4d6d;
+            border-radius: 0 0 12px 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            z-index: 1;
         }
+
+        /* Aba Superior Dobrável */
+        .envelope-flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 140px solid transparent;
+            border-right: 140px solid transparent;
+            border-top: 90px solid #ffb3c1;
+            transform-origin: top;
+            transition: transform 0.6s ease;
+            z-index: 5;
+        }
+        .envelope-flap::after {
+            content: '';
+            position: absolute;
+            top: -93px;
+            left: -140px;
+            width: 0;
+            height: 0;
+            border-left: 140px solid transparent;
+            border-right: 140px solid transparent;
+            border-top: 92px solid #ff4d6d;
+            z-index: -1;
+        }
+
+        /* Quando aberto, a aba vira para cima */
+        .envelope-container.open .envelope-flap {
+            transform: rotateX(180deg);
+            z-index: 0;
+        }
+
+        /* Selo de Coração */
+        .heart-seal {
+            position: absolute;
+            top: 70px;
+            left: 125px;
+            font-size: 30px;
+            z-index: 6;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+        .envelope-container.open .heart-seal {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* FOLHA DE VERDADE PAUTADA COM LINHAS */
         #letter {
             position: absolute;
-            bottom: 10px;
-            width: 180px;
-            height: 230px;
-            background: #ffffff;
-            border: 2px solid #ffccd5;
-            border-radius: 8px;
-            padding: 15px;
-            box-shadow: 0 -4px 15px rgba(0,0,0,0.1);
+            bottom: 5px;
+            left: 15px;
+            width: 250px;
+            height: 320px;
+            background: #fff;
+            background-image: linear-gradient(#e8f1f5 1px, transparent 1px);
+            background-size: 100% 24px; /* Tamanho entre as linhas */
+            border: 1px solid #ddd;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             z-index: 2;
+            padding: 30px 20px 20px 40px; /* Margem esquerda para o efeito do caderno */
             opacity: 0;
             transform: translateY(0);
-            transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.8s ease;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
+            transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s ease, z-index 0.5s step-end;
+            line-height: 24px;
         }
-        #letter.open {
+
+        /* Linha Vermelha de Margem */
+        #letter::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 32px;
+            width: 1px;
+            height: 100%;
+            background-color: #ff9999;
+        }
+
+        #letter.pulled {
             opacity: 1;
-            transform: translateY(-130px);
-            z-index: 12;
+            transform: translateY(-200px) scale(1.05);
+            z-index: 10;
         }
+
         #letter h3 {
-            margin: 0 0 10px 0;
+            margin: 0 0 12px 0;
             color: #ff4d6d;
             font-size: 18px;
+            font-family: 'Georgia', serif;
         }
+
         #letter p {
             margin: 0;
-            color: #4a4a4a;
+            color: #333;
             font-size: 14px;
-            line-height: 1.4;
+            font-family: 'Courier New', Courier, monospace; /* Fonte estilo manuscrita/carta */
+            text-align: left;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            z-index: 20;
         }
     </style>
 </head>
@@ -237,14 +307,24 @@
         </div>
 
         <div id="envelope-screen" class="screen hide">
-            <h1>Para Minha Princesa 👑</h1>
-            <div class="envelope-wrapper">
+            <h1 style="margin-bottom: 60px;">Para Minha Princesa 👑</h1>
+            
+            <div class="envelope-container" id="myEnvelope">
+                <div class="envelope-flap"></div>
+                <div class="heart-seal">❤️</div>
+                
                 <div id="letter">
                     <h3>Sobrescreva texte</h3>
-                    <p>Aqui entrará a sua declaração personalizada quando você me enviar! ❤️</p>
+                    <p>Aqui entrará a sua declaração personalizada quando você me enviar! Alinhada perfeitamente na folha.</p>
                 </div>
+                
+                <div class="envelope-back"></div>
             </div>
-            <button id="open-envelope-btn">Abrir Envelope 💌</button>
+
+            <div class="button-group">
+                <button id="open-envelope-btn">Abrir 💌</button>
+                <button id="close-envelope-btn" class="hide" style="background-color: #777;">Fechar ↩️</button>
+            </div>
         </div>
 
         <canvas id="gameCanvas" width="360" height="640"></canvas>
@@ -261,6 +341,10 @@
         const envelopeScreen = document.getElementById('envelope-screen');
         const dialogueBox = document.getElementById('dialogue-box');
         const cutsceneText = document.getElementById('cutscene-text');
+        const myEnvelope = document.getElementById('myEnvelope');
+        const letter = document.getElementById('letter');
+        const btnOpen = document.getElementById('open-envelope-btn');
+        const btnClose = document.getElementById('close-envelope-btn');
 
         let gameState = 'INTRO';
         let score = 0;
@@ -272,7 +356,6 @@
         let cutsceneFase = 0;
         let ultimoMilestoneFala = 0;
 
-        // Falas dinâmicas a cada 3 abates na fase dela
         const falasProgresso = {
             3: "Isso aí amor! Começou bem! 🥰",
             6: "Manda esses folgados embora! 😡",
@@ -328,7 +411,7 @@
                 this.x = x;
                 this.y = y;
                 this.radius = 16;
-                this.speed = 1.7; // Velocidade ligeiramente aumentada
+                this.speed = 1.7; 
                 this.name = type === 'homem' ? 'Homem 🚫' : 'Mulher 🚫';
                 this.color = type === 'homem' ? '#4ea8de' : '#ff70a6';
             }
@@ -360,7 +443,7 @@
                 this.x = x;
                 this.y = y;
                 this.radius = 12;
-                this.speed = 10;
+                this.speed = 11; // Balas mais rápidas para interceptar com segurança
                 let dx = targetX - this.x;
                 let dy = targetY - this.y;
                 let dist = Math.sqrt(dx * dx + dy * dy);
@@ -394,7 +477,10 @@
             victoryScreen.classList.add('hide');
             cutsceneScreen.classList.add('hide');
             envelopeScreen.classList.add('hide');
-            document.getElementById('letter').classList.remove('open');
+            myEnvelope.classList.remove('open');
+            letter.classList.remove('pulled');
+            btnOpen.classList.remove('hide');
+            btnClose.classList.add('hide');
             dialogueBox.style.display = 'none';
 
             spawnTimer = 0;
@@ -416,18 +502,6 @@
             }, 2200);
         }
 
-        function spawnEnemy(type = 'homem') {
-            let x, y;
-            if (Math.random() < 0.5) {
-                x = Math.random() < 0.5 ? -20 : canvas.width + 20;
-                y = Math.random() * canvas.height;
-            } else {
-                x = Math.random() * canvas.width;
-                y = Math.random() < 0.5 ? -20 : canvas.height + 20;
-            }
-            enemies.push(new Enemy(x, y, type));
-        }
-
         function gameLoop() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -443,17 +517,18 @@
 
                 spawnTimer++;
                 if (spawnTimer % 70 === 0 && score < 20) {
-                    spawnEnemy('homem');
+                    let x, y;
+                    if (Math.random() < 0.5) {
+                        x = Math.random() < 0.5 ? -20 : canvas.width + 20; y = Math.random() * canvas.height;
+                    } else {
+                        x = Math.random() * canvas.width; y = Math.random() < 0.5 ? -20 : canvas.height + 20;
+                    }
+                    enemies.push(new Enemy(x, y, 'homem'));
                 }
 
                 for (let i = bullets.length - 1; i >= 0; i--) {
                     bullets[i].update();
                     bullets[i].draw();
-
-                    if (bullets[i].x < -50 || bullets[i].x > canvas.width + 50 || bullets[i].y < -50 || bullets[i].y > canvas.height + 50) {
-                        bullets.splice(i, 1);
-                        continue;
-                    }
 
                     for (let j = enemies.length - 1; j >= 0; j--) {
                         let dx = bullets[i].x - enemies[j].x;
@@ -502,30 +577,28 @@
                 }
             } 
             else if (gameState === 'CUTSCENE') {
-                // APENAS O SEU BONECO NO CENTRO DA TELA
                 boyfriend.draw();
-
                 cutsceneTimer++;
 
-                // Passo 0: Invoca exatamente 100 mulheres vindo de todos os cantos (360 graus)
+                // Passo 0: Cria 100 mulheres surgindo bem distantes das bordas
                 if (cutsceneFase === 0 && cutsceneTimer === 20) {
                     for (let i = 0; i < 100; i++) {
                         let angulo = Math.random() * Math.PI * 2;
-                        let raioSpawn = 420; 
+                        let raioSpawn = 450; // Aumentado o raio de spawn para que fiquem bem longe no início
                         let ex = boyfriend.x + Math.cos(angulo) * raioSpawn;
                         let ey = boyfriend.y + Math.sin(angulo) * raioSpawn;
                         
                         let novaMulher = new Enemy(ex, ey, 'mulher');
-                        novaMulher.speed = 1.3; 
+                        novaMulher.speed = 1.1; 
                         enemies.push(novaMulher);
                     }
                     cutsceneFase = 1;
                 }
 
-                // Passo 1: Disparos automatizados insanos em área periférica completa
+                // Passo 1: Metralhadora automática contínua em 360°
                 if (cutsceneFase === 1) {
-                    // Cadência ultrarápida (atira a cada 3 quadros)
-                    if (cutsceneTimer % 3 === 0 && enemies.length > 0) {
+                    // Atira a cada 2 quadros para limpar rapidamente antes de chegarem perto
+                    if (cutsceneTimer % 2 === 0 && enemies.length > 0) {
                         let alvoAleatorio = enemies[Math.floor(Math.random() * enemies.length)];
                         bullets.push(new Bullet(boyfriend.x, boyfriend.y, alvoAleatorio.x, alvoAleatorio.y));
                     }
@@ -535,7 +608,7 @@
                     }
                 }
 
-                // Mecânica física das balas na cutscene
+                // Atualiza movimentação e colisão estrita de projéteis
                 for (let i = bullets.length - 1; i >= 0; i--) {
                     bullets[i].update();
                     bullets[i].draw();
@@ -553,13 +626,12 @@
                     }
                 }
 
-                // Move horda em 360° na sua direção
+                // Move horda em direção ao namorado, sem deixá-las colidirem (eliminadas antes)
                 enemies.forEach(e => {
                     e.update(boyfriend.x, boyfriend.y);
                     e.draw();
                 });
 
-                // Passo 2: Quando todas somem da tela após os tiros, ativa a fala e a transição do envelope
                 if (cutsceneFase === 2) {
                     cutsceneText.innerHTML = "😎 <strong>É assim que se faz, hihihi! Matando geral!</strong>";
                     cutsceneFase = 3;
@@ -585,9 +657,7 @@
 
         canvas.addEventListener('click', (e) => lidarComTiro(e.clientX, e.clientY));
         canvas.addEventListener('touchstart', (e) => {
-            if(e.touches.length > 0) {
-                lidarComTiro(e.touches[0].clientX, e.touches[0].clientY);
-            }
+            if(e.touches.length > 0) lidarComTiro(e.touches[0].clientX, e.touches[0].clientY);
         });
 
         document.getElementById('start-btn').addEventListener('click', initGame);
@@ -598,20 +668,30 @@
             cutsceneScreen.classList.remove('hide');
             gameState = 'CUTSCENE';
             
-            // Centraliza o seu boneco perfeitamente para o combate cênico 360°
             boyfriend.x = canvas.width / 2;
             boyfriend.y = canvas.height / 2;
             
-            enemies = [];
-            bullets = [];
-            cutsceneFase = 0;
-            cutsceneTimer = 0;
+            enemies = []; bullets = []; cutsceneFase = 0; cutsceneTimer = 0;
             cutsceneText.innerHTML = "👀 Espera só para ver as gurias vindo...";
         });
 
-        // Evento de clique para disparar a animação do envelope subindo
-        document.getElementById('open-envelope-btn').addEventListener('click', () => {
-            document.getElementById('letter').classList.add('open');
+        // Controle Dinâmico do Envelope Realista
+        btnOpen.addEventListener('click', () => {
+            myEnvelope.classList.add('open');
+            setTimeout(() => {
+                letter.classList.add('pulled');
+                btnOpen.classList.add('hide');
+                btnClose.classList.remove('hide');
+            }, 600); // Espera a aba abrir para subir a folha
+        });
+
+        btnClose.addEventListener('click', () => {
+            letter.classList.remove('pulled');
+            setTimeout(() => {
+                myEnvelope.classList.remove('open');
+                btnClose.classList.add('hide');
+                btnOpen.classList.remove('hide');
+            }, 800); // Espera a folha descer para fechar a aba
         });
 
         gameLoop();
