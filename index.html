@@ -40,7 +40,7 @@
             width: 100%;
             height: 100%;
         }
-        /* Telas Sobrepostas */
+        /* Telas Sobrepostas Menu/Vitória/Derrota */
         .screen {
             position: absolute;
             top: 0;
@@ -56,6 +56,22 @@
             text-align: center;
             z-index: 10;
         }
+        /* CORREÇÃO CRÍTICA: Tela da cutscene agora é transparente para expor o Canvas */
+        #cutscene-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: transparent; 
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between; /* Texto vai para as extremidades */
+            padding: 20px;
+            text-align: center;
+            z-index: 10;
+            pointer-events: none; /* Não bloqueia cliques invisíveis */
+        }
         .hide {
             display: none !important;
         }
@@ -63,6 +79,15 @@
             color: #ff4d6d;
             font-size: 26px;
             margin-bottom: 15px;
+        }
+        .cutscene-title {
+            color: #ff4d6d;
+            font-size: 24px;
+            font-weight: bold;
+            background: rgba(255, 255, 255, 0.8.5);
+            padding: 8px 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         }
         p {
             color: #4a4a4a;
@@ -108,14 +133,18 @@
             border: 8px solid transparent;
             border-top-color: white;
         }
-        /* Estilo Legenda da Cutscene */
+        /* Legenda de fala na parte inferior */
         #cutscene-text {
             font-size: 18px;
             font-weight: bold;
             color: #ff4d6d;
-            margin-top: 20px;
-            min-height: 60px;
-            padding: 0 10px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid #ff4d6d;
+            border-radius: 15px;
+            padding: 12px;
+            min-height: 50px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
         }
     </style>
 </head>
@@ -143,7 +172,7 @@
         </div>
 
         <div id="cutscene-screen" class="screen hide">
-            <h1>Enquanto isso... 😎</h1>
+            <div class="cutscene-title">Enquanto isso... 😎</div>
             <div id="cutscene-text"></div>
         </div>
 
@@ -168,7 +197,6 @@
         let spawnTimer;
         let dialogueTimer;
         
-        // Controle da linha do tempo da cutscene automática
         let cutsceneTimer = 0;
         let cutsceneFase = 0;
 
@@ -225,7 +253,7 @@
                 this.x = x;
                 this.y = y;
                 this.radius = 16;
-                this.speed = 1.0; // Acelerado um pouco mais os NPCs conforme solicitado
+                this.speed = 1.3; 
                 this.name = type === 'homem' ? 'Homem 🚫' : 'Mulher 🚫';
                 this.color = type === 'homem' ? '#4ea8de' : '#ff70a6';
             }
@@ -338,7 +366,7 @@
                 player.draw();
 
                 spawnTimer++;
-                if (spawnTimer % 90 === 0 && score < 10) {
+                if (spawnTimer % 85 === 0 && score < 10) {
                     spawnEnemy('homem');
                 }
 
@@ -394,30 +422,30 @@
                 }
             } 
             else if (gameState === 'CUTSCENE') {
-                // RENDERIZACÃO DA CUTSCENE ESTILO VÍDEO COMPLETO E AUTOMÁTICO
+                // RENDERIZACÃO VISUAL DA CUTSCENE DIRETO NO CANVAS
                 boyfriend.draw();
                 player.draw();
 
                 cutsceneTimer++;
 
-                // Evento 1: Criação física das mulheres andando aceleradas na tela
-                if (cutsceneFase === 0 && cutsceneTimer === 30) {
+                // Passo 0: Cria as mulheres nascendo das bordas de baixo
+                if (cutsceneFase === 0 && cutsceneTimer === 20) {
                     enemies.push(new Enemy(40, canvas.height + 20, 'mulher'));
                     enemies.push(new Enemy(canvas.width - 40, canvas.height + 20, 'mulher'));
-                    enemies.forEach(e => e.speed = 1.2); // Velocidade de corrida ajustada
+                    enemies.forEach(e => e.speed = 1.4); 
                     cutsceneFase = 1;
                 }
 
-                // Evento 2: Disparos automatizados físicos do seu boneco na direção delas
-                if (cutsceneFase === 1 && cutsceneTimer === 90) {
+                // Passo 1: Dispara rajadas reais automáticas do seu boneco nelas
+                if (cutsceneFase === 1 && cutsceneTimer === 65) {
                     enemies.forEach(e => {
                         bullets.push(new Bullet(boyfriend.x, boyfriend.y, e.x, e.y));
-                        bullets.push(new Bullet(boyfriend.x, boyfriend.y, e.x, e.y + 30)); // rajada dupla pra garantir o efeito visual
+                        bullets.push(new Bullet(boyfriend.x, boyfriend.y, e.x, e.y + 25)); 
                     });
                     cutsceneFase = 2;
                 }
 
-                // Processamento Físico Real das balas na Cutscene (Move, Desenha e Colide)
+                // Move e limpa as balas e colisões
                 for (let i = bullets.length - 1; i >= 0; i--) {
                     bullets[i].update();
                     bullets[i].draw();
@@ -427,7 +455,6 @@
                         let dy = bullets[i].y - enemies[j].y;
                         let dist = Math.sqrt(dx * dx + dy * dy);
 
-                        // Se a bala acertar a NPC fisicamente, ela morre e some
                         if (dist < enemies[j].radius + 12) {
                             enemies.splice(j, 1);
                             bullets.splice(i, 1);
@@ -436,20 +463,20 @@
                     }
                 }
 
-                // Move e renderiza as mulheres perseguindo você
+                // Move as mulheres em sua direção na tela
                 enemies.forEach(e => {
                     e.update(boyfriend.x, boyfriend.y);
                     e.draw();
                 });
 
-                // Evento 3: Assim que as balas limpam os NPCs, exibe a sua fala na legenda
+                // Passo 2: O acerto físico aconteceu, as mulheres sumiram, mostra a sua fala real
                 if (cutsceneFase === 2 && enemies.length === 0) {
                     cutsceneText.innerHTML = "😎 <strong>É assim que se faz, hihihi!</strong>";
                     cutsceneFase = 3;
                 }
 
-                // Evento 4: Encerramento com a declaração romântica final
-                if (cutsceneFase === 3 && cutsceneTimer > 250) {
+                // Passo 3: Texto final romântico
+                if (cutsceneFase === 3 && cutsceneTimer > 220) {
                     cutsceneText.innerHTML = "❤️ Aqui só você entra! Te amo, minha princesa! ❤️";
                     cutsceneFase = 4;
                 }
@@ -481,17 +508,17 @@
             cutsceneScreen.classList.remove('hide');
             gameState = 'CUTSCENE';
             
-            // Configuração do cenário do "vídeo"
+            // Posição no centro da tela para ficar totalmente visível
             boyfriend.x = canvas.width / 2;
             boyfriend.y = canvas.height / 2 + 60;
             player.x = canvas.width / 2;
-            player.y = canvas.height / 2 - 120; // Ela fica no topo assistindo salva
+            player.y = canvas.height / 2 - 120; 
             
             enemies = [];
             bullets = [];
             cutsceneFase = 0;
             cutsceneTimer = 0;
-            cutsceneText.innerHTML = "";
+            cutsceneText.innerHTML = "👀 Olha lá de longe...";
         });
 
         gameLoop();
