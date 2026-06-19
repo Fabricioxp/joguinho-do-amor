@@ -81,34 +81,34 @@
             cursor: pointer;
             box-shadow: 0 5px 15px rgba(255, 77, 109, 0.4);
         }
-        /* Balão de Fala do Namorado no Jogo */
+        /* Balão de Fala Dinâmico acima do Namorado */
         #dialogue-box {
             position: absolute;
-            top: 80px;
-            left: 5%;
-            width: 90%;
             background: white;
-            border: 3px solid #ff4d6d;
-            border-radius: 15px;
-            padding: 10px 15px;
+            border: 2px solid #ff4d6d;
+            border-radius: 10px;
+            padding: 6px 12px;
             font-weight: bold;
-            font-size: 14px;
+            font-size: 12px;
             color: #ff4d6d;
-            box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
             pointer-events: none;
             display: none;
             text-align: center;
             z-index: 5;
+            max-width: 180px;
+            transform: translate(-50%, -100%);
         }
         #dialogue-box::after {
             content: '';
             position: absolute;
             top: 100%;
-            left: 20%;
-            border: 10px solid transparent;
-            border-top-color: #ff4d6d;
+            left: 50%;
+            margin-left: -8px;
+            border: 8px solid transparent;
+            border-top-color: white;
         }
-        /* Estilo da Cutscene */
+        /* Estilo Legenda da Cutscene */
         #cutscene-text {
             font-size: 18px;
             font-weight: bold;
@@ -126,7 +126,7 @@
 
         <div id="intro-screen" class="screen">
             <h1>Defenda o Nosso Amor! ❤️</h1>
-            <p>Oi, minha linda! Alguns caras folgados estão tentando se aproximar de você. <br><br><strong>Toque na tela na direção deles para mandar um belo 🖕 bem na cara deles!</strong><br><br>Você precisa afastar 10 homens para vencer. Eu estarei ali embaixo cuidando. Não deixe eles encostarem 3 vezes!</p>
+            <p>Oi, minha linda! Alguns caras folgados estão tentando se aproximar de você. <br><br><strong>Toque na tela na direção deles para mandar um belo 🖕 bem na cara deles!</strong><br><br>Você precisa afastar 10 homens para vencer. Eu estarei ali embaixo de olho. Não deixe eles encostarem 3 vezes!</p>
             <button id="start-btn">Começar Jogo</button>
         </div>
 
@@ -138,7 +138,7 @@
 
         <div id="victory-screen" class="screen hide">
             <h1>Você conseguiu! 😍🎉</h1>
-            <p>Você botou todos eles no lugar deles! Que orgulho da minha namorada. Agora, deixa que eu te mostro como eu cuido das coisas do meu lado...</p>
+            <p>Você botou todos eles no lugar deles! Que orgulho da minha namorada. Agora, senta aí e assiste como eu cuido das coisas do meu lado...</p>
             <button id="cutscene-btn">Ver o Namorado em Ação</button>
         </div>
 
@@ -154,15 +154,14 @@
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
 
-        // Telas e Botões
         const introScreen = document.getElementById('intro-screen');
         const gameoverScreen = document.getElementById('gameover-screen');
         const victoryScreen = document.getElementById('victory-screen');
         const cutsceneScreen = document.getElementById('cutscene-screen');
         const dialogueBox = document.getElementById('dialogue-box');
         const cutsceneText = document.getElementById('cutscene-text');
+        const container = document.getElementById('game-container');
 
-        // Configurações do Jogo
         let gameState = 'INTRO';
         let score = 0;
         let lives = 3;
@@ -170,17 +169,16 @@
         let spawnTimer;
         let dialogueTimer;
 
-        // Frases
         const frasesErro = [
-            "Amooor?? Vai deixar esses caras chegarem perto de você? 🤨",
-            "Ei! Sai de perto da minha namorada! Manda o dedo nele, amor! 😡",
-            "Olha o respeito, rapaz! Toma esse 🖕 bem no meio do peito!"
+            "Amooor?? Vai deixar esses caras chegarem perto? 🤨",
+            "Ei! Sai de perto dela! Manda o dedo nele, amor! 😡",
+            "Olha o respeito! Toma esse 🖕 bem no peito!"
         ];
 
         const frasesAcerto = [
             "Boaaa, amor! É assim que se faz! 🥰",
-            "Minha namorada é braba demais, esquece! 😎",
-            "Isso! Mostra pra eles que você já tem dono! ❤️"
+            "Minha namorada é braba demais! 😎",
+            "Isso! Mostra que você já tem dono! ❤️"
         ];
 
         class PlayerCharacter {
@@ -214,7 +212,6 @@
                 ctx.stroke();
                 ctx.closePath();
 
-                // Nome acima
                 ctx.fillStyle = '#4a4a4a';
                 ctx.font = 'bold 12px Arial';
                 ctx.textAlign = 'center';
@@ -227,7 +224,7 @@
                 this.x = x;
                 this.y = y;
                 this.radius = 16;
-                this.speed = 1.3;
+                this.speed = 0.7; // Deixado bem mais devagar (antes era 1.3)
                 this.name = type === 'homem' ? 'Homem 🚫' : 'Mulher 🚫';
                 this.color = type === 'homem' ? '#4ea8de' : '#ff70a6';
             }
@@ -235,8 +232,10 @@
                 let dx = targetX - this.x;
                 let dy = targetY - this.y;
                 let dist = Math.sqrt(dx * dx + dy * dy);
-                this.x += (dx / dist) * this.speed;
-                this.y += (dy / dist) * this.speed;
+                if (dist > 1) {
+                    this.x += (dx / dist) * this.speed;
+                    this.y += (dy / dist) * this.speed;
+                }
             }
             draw() {
                 ctx.beginPath();
@@ -269,7 +268,6 @@
                 this.y += this.vy;
             }
             draw() {
-                // Renderiza o emoji de dedo do meio
                 ctx.font = '22px Arial';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
@@ -280,7 +278,6 @@
         function initGame() {
             score = 0;
             lives = 3;
-            // Posicionamento vertical otimizado para celular
             player = new PlayerCharacter(canvas.width / 2, canvas.height / 2 - 40, 'Você 💖', '#ff4d6d');
             boyfriend = new PlayerCharacter(70, canvas.height - 60, 'Namorado (Eu) 👦', '#38b000');
             enemies = [];
@@ -296,9 +293,17 @@
             spawnTimer = 0;
         }
 
+        // Reposiciona o balão perfeitamente sobre o boneco do namorado
         function falar(frases) {
             const fraseAleatoria = frases[Math.floor(Math.random() * frases.length)];
             dialogueBox.innerText = fraseAleatoria;
+            
+            const rect = canvas.getBoundingClientRect();
+            const posX = (boyfriend.x / canvas.width) * rect.width;
+            const posY = (boyfriend.y / canvas.height) * rect.height - 30;
+
+            dialogueBox.style.left = `${posX}px`;
+            dialogueBox.style.top = `${posY}px`;
             dialogueBox.style.display = 'block';
             
             clearTimeout(dialogueTimer);
@@ -334,7 +339,7 @@
                 player.draw();
 
                 spawnTimer++;
-                if (spawnTimer % 80 === 0 && score < 10) {
+                if (spawnTimer % 100 === 0 && score < 10) {
                     spawnEnemy('homem');
                 }
 
@@ -361,6 +366,7 @@
                             if (score >= 10) {
                                 gameState = 'VICTORY';
                                 victoryScreen.classList.remove('hide');
+                                dialogueBox.style.display = 'none';
                             }
                             break;
                         }
@@ -383,40 +389,52 @@
                         if (lives <= 0) {
                             gameState = 'GAMEOVER';
                             gameoverScreen.classList.remove('hide');
+                            dialogueBox.style.display = 'none';
                         }
                     }
                 }
-            } else if (gameState === 'CUTSCENE') {
+            } 
+            else if (gameState === 'CUTSCENE') {
+                // Renderização do "Vídeo" Automático
                 boyfriend.draw();
                 player.draw();
 
+                // Atualizar e desenhar projéteis automáticos na cutscene
+                for (let i = bullets.length - 1; i >= 0; i--) {
+                    bullets[i].update();
+                    bullets[i].draw();
+
+                    for (let j = enemies.length - 1; j >= 0; j--) {
+                        let dx = bullets[i].x - enemies[j].x;
+                        let dy = bullets[i].y - enemies[j].y;
+                        let dist = Math.sqrt(dx * dx + dy * dy);
+
+                        if (dist < enemies[j].radius + 12) {
+                            enemies.splice(j, 1);
+                            bullets.splice(i, 1);
+                            break;
+                        }
+                    }
+                }
+
+                // Inimigas perseguem o namorado automaticamente
                 enemies.forEach(e => {
                     e.update(boyfriend.x, boyfriend.y);
                     e.draw();
-                });
-
-                bullets.forEach(b => {
-                    b.update();
-                    b.draw();
                 });
             }
 
             requestAnimationFrame(gameLoop);
         }
 
-        // Função unificada para tiros (Toque/Clique)
         function lidarComTiro(clientX, clientY) {
             if (gameState !== 'PLAYING') return;
             const rect = canvas.getBoundingClientRect();
-            
-            // Converte coordenadas da tela para dentro da resolução do Canvas (360x640)
             const mouseX = ((clientX - rect.left) / rect.width) * canvas.width;
             const mouseY = ((clientY - rect.top) / rect.height) * canvas.height;
-
             bullets.push(new Bullet(player.x, player.y, mouseX, mouseY));
         }
 
-        // Eventos de Input para Celular e PC
         canvas.addEventListener('click', (e) => lidarComTiro(e.clientX, e.clientY));
         canvas.addEventListener('touchstart', (e) => {
             if(e.touches.length > 0) {
@@ -432,11 +450,11 @@
             cutsceneScreen.classList.remove('hide');
             gameState = 'CUTSCENE';
             
-            // Reajusta posições para a Cutscene vertical
+            // Reposiciona para a simulação do vídeo da Cutscene
             boyfriend.x = canvas.width / 2;
-            boyfriend.y = canvas.height / 2 + 50;
+            boyfriend.y = canvas.height / 2 + 80;
             player.x = canvas.width / 2;
-            player.y = canvas.height / 2 - 120; // Assiste de cima protegida
+            player.y = canvas.height / 2 - 120; 
             
             enemies = [];
             bullets = [];
@@ -444,27 +462,30 @@
             executarCutscene();
         });
 
+        // Controle Cronometrado da Ação Automática (Vídeo da Cutscene)
         function executarCutscene() {
             let passo = 0;
 
             const t1 = setInterval(() => {
                 if (passo === 0) {
-                    cutsceneText.innerHTML = "🚨 ATENÇÃO! Várias garotas apareceram para falar com o seu namorado!";
-                    // Spawna inimigas vindo das bordas de baixo perto do namorado
-                    enemies.push(new Enemy(20, canvas.height - 20, 'mulher'));
-                    enemies.push(new Enemy(canvas.width - 20, canvas.height - 20, 'mulher'));
+                    cutsceneText.innerHTML = "🚨 ATENÇÃO! Várias garotas surgiram para tentar falar com o seu namorado!";
+                    // Nasce duas mulheres andando em direção ao namorado
+                    enemies.push(new Enemy(40, canvas.height - 20, 'mulher'));
+                    enemies.push(new Enemy(canvas.width - 40, canvas.height - 20, 'mulher'));
+                    enemies.forEach(e => e.speed = 0.5); // Bem lentas pra dar efeito dramático
                 } 
                 else if (passo === 1) {
                     cutsceneText.innerHTML = "💬 <strong>Eu digo:</strong> Opa, sai fora! Nem pensem em dar um passo! 🖐️";
                 }
                 else if (passo === 2) {
-                    cutsceneText.innerHTML = "💥 *MANDANDO SEU PRESENTINHO!* 💥";
+                    cutsceneText.innerHTML = "💥 *MANDANDO O PRESENTINHO COLETIVO!* 💥";
+                    // Dispara os emojis automaticamente simulando sua jogada perfeita
                     enemies.forEach(e => {
                         bullets.push(new Bullet(boyfriend.x, boyfriend.y, e.x, e.y));
                     });
                 }
                 else if (passo === 3) {
-                    enemies = [];
+                    enemies = []; // Garante a eliminação visual
                     cutsceneText.innerHTML = "😎 <strong>Eu digo:</strong> É assim que se faz, hihihi! Só tenho olhos para a minha princesa.";
                 }
                 else if (passo === 4) {
