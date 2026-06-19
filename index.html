@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Para Minha Princesa ❤️</title>
     <style>
+        :root {
+            --primary: #ff758c;
+            --secondary: #ff7eb3;
+            --bg: #fff0f5;
+            --text: #4a2c2c;
+        }
         * {
             box-sizing: border-box;
             user-select: none;
@@ -15,7 +21,7 @@
         body {
             margin: 0;
             padding: 0;
-            background: #121212;
+            background: #2d1b24;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
             justify-content: center;
@@ -27,17 +33,13 @@
             position: relative;
             width: 100vw;
             height: 100vh;
-            max-width: 450px;
-            max-height: 850px;
-            background-color: #fff5f5;
-            border: 2px solid #ff4d6d;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            max-width: 430px;
+            background: linear-gradient(180deg, #fff0f5 0%, #ffe4e8 100%);
+            box-shadow: 0 0 40px rgba(0,0,0,0.6);
             overflow: hidden;
-            aspect-ratio: 9 / 16;
         }
         canvas {
             display: block;
-            background-color: #fff9f9;
             width: 100%;
             height: 100%;
         }
@@ -47,14 +49,14 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(255, 240, 240, 0.98);
+            background: rgba(255, 240, 245, 0.97);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 25px;
+            padding: 30px;
             text-align: center;
-            z-index: 10;
+            z-index: 30;
         }
         #cutscene-screen {
             position: absolute;
@@ -62,67 +64,71 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: transparent; 
+            background: transparent;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             padding: 20px;
             text-align: center;
-            z-index: 10;
+            z-index: 25;
             pointer-events: none;
         }
         .hide {
             display: none !important;
         }
         h1 {
-            color: #ff4d6d;
-            font-size: 24px;
-            margin-bottom: 10px;
+            color: var(--primary);
+            font-size: 26px;
+            margin-bottom: 15px;
             margin-top: 0;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
         }
         .cutscene-title {
-            color: #ff4d6d;
-            font-size: 24px;
+            color: var(--primary);
+            font-size: 22px;
             font-weight: bold;
-            background: rgba(255, 255, 255, 0.85);
-            padding: 8px 15px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
         }
         p {
-            color: #4a4a4a;
+            color: var(--text);
             font-size: 15px;
-            line-height: 1.5;
-            margin-bottom: 20px;
+            line-height: 1.6;
+            margin-bottom: 25px;
         }
         button {
-            background-color: #ff4d6d;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
             border: none;
-            padding: 13px 25px;
+            padding: 14px 30px;
             font-size: 15px;
             font-weight: bold;
             border-radius: 50px;
             cursor: pointer;
-            box-shadow: 0 5px 15px rgba(255, 77, 109, 0.4);
-            z-index: 15;
+            box-shadow: 0 5px 15px rgba(255, 117, 140, 0.4);
             margin: 5px;
+            transition: transform 0.1s;
+        }
+        button:active {
+            transform: scale(0.96);
         }
         #dialogue-box {
             position: absolute;
             background: white;
-            border: 2px solid #ff4d6d;
-            border-radius: 10px;
-            padding: 6px 12px;
+            border: 2px solid var(--primary);
+            border-radius: 15px;
+            padding: 8px 14px;
             font-weight: bold;
-            font-size: 12px;
-            color: #ff4d6d;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            font-size: 13px;
+            color: var(--primary);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
             pointer-events: none;
             display: none;
             text-align: center;
-            z-index: 5;
-            max-width: 180px;
+            z-index: 40;
+            max-width: 190px;
             transform: translate(-50%, -100%);
         }
         #dialogue-box::after {
@@ -135,60 +141,61 @@
             border-top-color: white;
         }
         #cutscene-text {
-            font-size: 18px;
+            font-size: 17px;
             font-weight: bold;
-            color: #ff4d6d;
+            color: var(--primary);
             background: rgba(255, 255, 255, 0.95);
-            border: 2px solid #ff4d6d;
-            border-radius: 15px;
-            padding: 12px;
-            min-height: 50px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            border: 2px solid var(--primary);
+            border-radius: 20px;
+            padding: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
             margin-bottom: 20px;
         }
 
-        /* TELA INTERFACE ENVELOPE (Z-INDEX ALTO) */
+        /* INTERFACE SCROLL TOTAL DO ENVELOPE (FICA POR CIMA DE TUDO) */
         #envelope-screen {
-            background: rgba(255, 240, 240, 0.98);
-            z-index: 50; 
+            background: #fffafa;
+            z-index: 100;
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
-            padding-top: 25px;
-        }
-        
-        /* Contêiner do Envelope Tridimensional */
-        .envelope-container {
-            position: relative;
-            width: 280px;
-            height: 170px;
-            margin-top: 20px;
-            margin-bottom: 30px;
-            perspective: 1000px;
+            align-items: center;
+            overflow-y: auto; /* Permite rolar a tela do envelope toda */
+            padding: 30px 20px 120px 20px; /* Espaço para o footer fixo */
         }
 
-        /* Fundo do Envelope */
+        .envelope-wrapper {
+            position: relative;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Estrutura Tridimensional Visual do Envelope */
+        .envelope-box {
+            position: relative;
+            width: 290px;
+            height: 180px;
+            margin: 25px 0;
+            perspective: 1000px;
+        }
         .envelope-back {
             position: absolute;
             width: 100%;
             height: 100%;
             background-color: #ffccd5;
-            border: 2px solid #ff4d6d;
-            border-radius: 0 0 12px 12px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            border: 2px solid var(--primary);
+            border-radius: 0 0 15px 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
             z-index: 1;
         }
-
-        /* Aba Superior Dobrável */
         .envelope-flap {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 0;
-            height: 0;
-            border-left: 140px solid transparent;
-            border-right: 140px solid transparent;
-            border-top: 85px solid #ffb3c1;
+            top: 0; left: 0; width: 0; height: 0;
+            border-left: 145px solid transparent;
+            border-right: 145px solid transparent;
+            border-top: 90px solid #ffb3c1;
             transform-origin: top;
             transition: transform 0.6s ease;
             z-index: 5;
@@ -196,86 +203,55 @@
         .envelope-flap::after {
             content: '';
             position: absolute;
-            top: -88px;
-            left: -140px;
-            width: 0;
-            height: 0;
-            border-left: 140px solid transparent;
-            border-right: 140px solid transparent;
-            border-top: 87px solid #ff4d6d;
+            top: -93px; left: -145px; width: 0; height: 0;
+            border-left: 145px solid transparent;
+            border-right: 145px solid transparent;
+            border-top: 91px solid var(--primary);
             z-index: -1;
         }
-
-        /* Transição de Abertura */
-        .envelope-container.open .envelope-flap {
+        .envelope-box.open .envelope-flap {
             transform: rotateX(180deg);
             z-index: 0;
         }
-
-        /* Selo de Coração */
         .heart-seal {
             position: absolute;
-            top: 65px;
-            left: 125px;
-            font-size: 30px;
+            top: 70px; left: 130px;
+            font-size: 32px;
             z-index: 6;
             cursor: pointer;
             transition: opacity 0.3s;
         }
-        .envelope-container.open .heart-seal {
+        .envelope-box.open .heart-seal {
             opacity: 0;
             pointer-events: none;
         }
 
-        /* FOLHA DE VERDADE PAUTADA COM LINHAS E SUPORTE A SCROLL */
+        /* FOLHA PAUTADA DE CADERNO REALISTA */
         #letter {
-            position: absolute;
-            bottom: 5px;
-            left: 15px;
-            width: 250px;
-            height: 310px;
+            width: 100%;
+            max-width: 370px;
             background: #fff;
-            /* Linhas azuis horizontais legítimas de caderno */
             background-image: linear-gradient(#e8f1f5 1px, transparent 1px);
-            background-size: 100% 24px; 
+            background-size: 100% 26px;
             border: 1px solid #ddd;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            z-index: 2;
-            padding: 24px 15px 20px 35px; 
-            opacity: 0;
-            transform: translateY(0);
-            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease, z-index 0.4s step-end;
-            
-            /* Habilita a rolagem interna do texto */
-            overflow-y: auto;
-            scrollbar-width: thin;
-            scrollbar-color: #ff4d6d #fff5f5;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+            border-radius: 8px;
+            padding: 30px 20px 30px 45px;
+            margin-top: 20px;
+            position: relative;
+            display: none; /* Só aparece quando o envelope abre */
         }
-
-        /* Margem Vermelha Vertical */
         #letter::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 28px;
-            width: 1px;
-            height: 100%;
+            top: 0; left: 35px; width: 1px; height: 100%;
             background-color: #ff9999;
-            pointer-events: none;
         }
-
-        /* Efeito de saída total do envelope para visualização ampla */
-        #letter.pulled {
-            opacity: 1;
-            transform: translateY(-205px) scale(1.3); /* Escala ampliada para preencher a tela do celular */
-            z-index: 10;
-        }
-
         #letter p {
             margin: 0;
             color: #333;
-            font-size: 11px; /* Tamanho ajustado para caber perfeitamente nas linhas */
-            line-height: 24px;
+            font-size: 14px;
+            line-height: 26px;
             font-family: 'Courier New', Courier, monospace;
             text-align: left;
             word-wrap: break-word;
@@ -283,15 +259,26 @@
             -webkit-user-select: text;
         }
 
-        /* Container de botões fixos sempre dispostos embaixo */
-        .button-container-fixed {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
+        /* FOOTER DE BOTÕES TRAVADO SEMPRE EM BAIXO (FIXO) */
+        .fixed-footer {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
             width: 100%;
-            margin-top: auto;
-            margin-bottom: 20px;
-            z-index: 60;
+            max-width: 430px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.96);
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            border-top: 1px solid #ffe4e8;
+            z-index: 110;
+        }
+        .fixed-footer button {
+            flex: 1;
+            margin: 0;
+            padding: 13px 10px;
         }
     </style>
 </head>
@@ -300,36 +287,45 @@
     <div id="game-container">
         <div id="dialogue-box"></div>
 
+        <!-- Tela de Introdução -->
         <div id="intro-screen" class="screen">
             <h1>Ei, minha linda! ❤️</h1>
-            <p>Alguns caras folgados estão se aproximando. <br><br><strong>Toque na tela na direção deles para mandar um belo 🖕 bem na cara deles!</strong><br><br>Você precisa afastar 20 homens para vencer. Eu estarei ali embaixo cuidando. Não deixe eles encostarem 3 vezes!</p>
-            <button id="start-btn">Começar Jogo</button>
+            <p>Alguns caras folgados estão tentando se aproximar! <br><br><strong>Toque ou clique na tela na direção deles para jogar um belo 🖕 bem na cara deles!</strong><br><br>Você precisa afastar 20 homens. Eu fico bem ali no canto cuidando de você. Não deixe eles encostarem 3 vezes!</p>
+            <button id="start-btn">Começar Jogo 🌸</button>
         </div>
 
+        <!-- Tela de Game Over -->
         <div id="gameover-screen" class="screen hide">
-            <h1>Poxa, amor! 💔</h1>
-            <p>Eles chegaram muito perto... Mas eu confio em você! Vamos tentar de novo?</p>
-            <button id="retry-btn">Tentar Novamente</button>
+            <h1>Poxa, meu amor! 💔</h1>
+            <p>Eles chegaram muito perto... Mas eu tenho total confiança na sua mira! Vamos tentar de novo juntinhos?</p>
+            <button id="retry-btn">Tentar Novamente 🔄</button>
         </div>
 
+        <!-- Tela de Vitória Temporária -->
         <div id="victory-screen" class="screen hide">
             <h1>Você conseguiu! 😍🎉</h1>
-            <p>Você botou todos os 20 no lugar deles! Que orgulho da minha namorada. Agora, olha como eu resolvo as coisas por aqui...</p>
-            <button id="cutscene-btn">Ver o Namorado em Ação</button>
+            <p>Você colocou todos os 20 no devido lugar deles! Que orgulho da minha princesa. Agora, senta aí e olha como eu resolvo as coisas por aqui...</p>
+            <button id="cutscene-btn">Ver Namorado em Ação 😎</button>
         </div>
 
+        <!-- Tela de Overlay da Cutscene -->
         <div id="cutscene-screen" class="screen hide">
-            <div class="cutscene-title">Enquanto isso... 😎</div>
+            <div class="cutscene-title">Defendendo Meu Amor... 🔥</div>
             <div id="cutscene-text">👀 Espera só para ver as gurias vindo...</div>
         </div>
 
+        <!-- Tela de Leitura da Carta Interativa -->
         <div id="envelope-screen" class="screen hide">
-            <h1 id="envelope-title">Você recebeu uma carta! 💌</h1>
-            
-            <div class="envelope-container" id="myEnvelope">
-                <div class="envelope-flap"></div>
-                <div class="heart-seal">❤️</div>
+            <div class="envelope-wrapper">
+                <h1 id="envelope-title">Você recebeu um bilhete! 💌</h1>
                 
+                <div class="envelope-box" id="myEnvelope">
+                    <div class="envelope-flap"></div>
+                    <div class="heart-seal" id="heartSeal">❤️</div>
+                    <div class="envelope-back"></div>
+                </div>
+
+                <!-- Folha Pautada Caderno -->
                 <div id="letter">
                     <p>
                         Esse joguinho meio bobo foi só para te mostrar que o meu desejo é deixar o nosso amor sempre assim: leve e gostoso. Desde que você chegou, a minha vida ganhou muito mais cor e alegria. Agora, sim, tenho os melhores motivos do mundo para viver e para fazer você se apaixonar por mim um pouquinho mais todos os dias.<br><br>
@@ -339,23 +335,29 @@
                         Eu amo muito você, minha princesa. 🥰
                     </p>
                 </div>
-                
-                <div class="envelope-back"></div>
             </div>
 
-            <div class="button-container-fixed">
-                <button id="open-envelope-btn" style="background-color: #ff4d6d; padding: 12px 18px;">Abrir 💌</button>
-                <button id="close-envelope-btn" class="hide" style="background-color: #777; padding: 12px 18px;">Fechar ↩️</button>
-                <button id="restart-game-btn" style="background-color: #38b000; padding: 12px 18px;">Jogar De Novo 🎮</button>
+            <!-- Botões Fixos que nunca saem da tela -->
+            <div class="fixed-footer">
+                <button id="close-envelope-btn" style="background: #777;">Fechar ↩️</button>
+                <button id="restart-game-btn" style="background: #38b000;">Jogar De Novo 🎮</button>
             </div>
         </div>
 
-        <canvas id="gameCanvas" width="360" height="640"></canvas>
+        <canvas id="gameCanvas"></canvas>
     </div>
 
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
+
+        // Ajuste dinâmico de resolução do Canvas
+        function resizeCanvas() {
+            const container = document.getElementById('game-container');
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
 
         const introScreen = document.getElementById('intro-screen');
         const gameoverScreen = document.getElementById('gameover-screen');
@@ -364,12 +366,14 @@
         const envelopeScreen = document.getElementById('envelope-screen');
         const dialogueBox = document.getElementById('dialogue-box');
         const cutsceneText = document.getElementById('cutscene-text');
+        
         const myEnvelope = document.getElementById('myEnvelope');
+        const heartSeal = document.getElementById('heartSeal');
         const letter = document.getElementById('letter');
-        const btnOpen = document.getElementById('open-envelope-btn');
+        const envelopeTitle = document.getElementById('envelope-title');
+        
         const btnClose = document.getElementById('close-envelope-btn');
         const btnRestart = document.getElementById('restart-game-btn');
-        const envelopeTitle = document.getElementById('envelope-title');
 
         let gameState = 'INTRO';
         let score = 0;
@@ -396,38 +400,47 @@
         ];
 
         class PlayerCharacter {
-            constructor(x, y, name, color) {
+            constructor(x, y, name, color, isPlayer) {
                 this.x = x;
                 this.y = y;
-                this.radius = 18;
+                this.radius = 20;
                 this.name = name;
                 this.color = color;
+                this.isPlayer = isPlayer;
             }
             draw() {
+                ctx.save();
+                // Sombra suave para os personagens ficarem mais bonitos
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = 'rgba(0,0,0,0.15)';
+                
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
                 ctx.fillStyle = this.color;
                 ctx.fill();
                 ctx.closePath();
+                ctx.restore();
 
+                // Desenha carinha/olhos
                 ctx.beginPath();
-                ctx.arc(this.x - 5, this.y - 3, 2.5, 0, Math.PI * 2);
-                ctx.arc(this.x + 5, this.y - 3, 2.5, 0, Math.PI * 2);
+                ctx.arc(this.x - 6, this.y - 4, 3, 0, Math.PI * 2);
+                ctx.arc(this.x + 6, this.y - 4, 3, 0, Math.PI * 2);
                 ctx.fillStyle = '#fff';
                 ctx.fill();
                 ctx.closePath();
 
                 ctx.beginPath();
-                ctx.arc(this.x, this.y + 3, 4, 0, Math.PI);
+                ctx.arc(this.x, this.y + 3, 5, 0, Math.PI);
                 ctx.strokeStyle = '#fff';
-                ctx.lineWidth = 2;
+                ctx.lineWidth = 2.5;
                 ctx.stroke();
                 ctx.closePath();
 
-                ctx.fillStyle = '#4a4a4a';
-                ctx.font = 'bold 12px Arial';
+                // Nomes e corações customizados por cima dos bonecos
+                ctx.fillStyle = '#4a2c2c';
+                ctx.font = 'bold 13px Arial';
                 ctx.textAlign = 'center';
-                ctx.fillText(this.name, this.x, this.y - 25);
+                ctx.fillText(this.name, this.x, this.y - 28);
             }
         }
 
@@ -436,9 +449,10 @@
                 this.x = x;
                 this.y = y;
                 this.radius = 16;
-                this.speed = 1.7; 
-                this.name = type === 'homem' ? 'Homem 🚫' : 'Mulher 🚫';
-                this.color = type === 'homem' ? '#4ea8de' : '#ff70a6';
+                this.speed = 1.6; 
+                this.type = type;
+                this.name = type === 'homem' ? 'Homem 🚫' : 'Guria 🚫';
+                this.color = type === 'homem' ? '#54a0ff' : '#ff9ff3';
             }
             update(targetX, targetY) {
                 let dx = targetX - this.x;
@@ -456,7 +470,7 @@
                 ctx.fill();
                 ctx.closePath();
 
-                ctx.fillStyle = '#777';
+                ctx.fillStyle = '#888';
                 ctx.font = '11px Arial';
                 ctx.textAlign = 'center';
                 ctx.fillText(this.name, this.x, this.y - 22);
@@ -468,7 +482,7 @@
                 this.x = x;
                 this.y = y;
                 this.radius = 12;
-                this.speed = 14; 
+                this.speed = 15; 
                 let dx = targetX - this.x;
                 let dy = targetY - this.y;
                 let dist = Math.sqrt(dx * dx + dy * dy);
@@ -480,7 +494,7 @@
                 this.y += this.vy;
             }
             draw() {
-                ctx.font = '22px Arial';
+                ctx.font = '24px Arial';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
                 ctx.fillText('🖕', this.x, this.y);
@@ -488,11 +502,14 @@
         }
 
         function initGame() {
+            resizeCanvas();
             score = 0;
             lives = 3;
             ultimoMilestoneFala = 0;
-            player = new PlayerCharacter(canvas.width / 2, canvas.height / 2 - 40, 'Você 💖', '#ff4d6d');
-            boyfriend = new PlayerCharacter(70, canvas.height - 60, 'Namorado (Eu) 👦', '#38b000');
+            
+            player = new PlayerCharacter(canvas.width / 2, canvas.height / 2 - 40, 'Você 👸', '#ff758c', true);
+            boyfriend = new PlayerCharacter(70, canvas.height - 60, 'Namorado 👦', '#38b000', false);
+            
             enemies = [];
             bullets = [];
             gameState = 'PLAYING';
@@ -504,23 +521,25 @@
             envelopeScreen.classList.add('hide');
             
             myEnvelope.classList.remove('open');
-            letter.classList.remove('pulled');
-            btnOpen.classList.remove('hide');
-            btnClose.classList.add('hide');
-            envelopeTitle.innerText = "Você recebeu uma carta! 💌";
+            letter.style.display = 'none';
+            envelopeTitle.innerText = "Você recebeu um bilhete! 💌";
             dialogueBox.style.display = 'none';
 
             spawnTimer = 0;
         }
 
-        function falarTexto(texto) {
-            dialogueBox.innerText = texto;
+        function posicionarFala() {
+            if (gameState !== 'PLAYING') return;
             const rect = canvas.getBoundingClientRect();
             const posX = (boyfriend.x / canvas.width) * rect.width;
-            const posY = (boyfriend.y / canvas.height) * rect.height - 30;
-
+            const posY = (boyfriend.y / canvas.height) * rect.height - 35;
             dialogueBox.style.left = `${posX}px`;
             dialogueBox.style.top = `${posY}px`;
+        }
+
+        function falarTexto(texto) {
+            dialogueBox.innerText = texto;
+            posicionarFala();
             dialogueBox.style.display = 'block';
             
             clearTimeout(dialogueTimer);
@@ -533,17 +552,19 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             if (gameState === 'PLAYING') {
-                ctx.fillStyle = '#4a4a4a';
-                ctx.font = 'bold 14px Arial';
+                // Placar Superior Elegante
+                ctx.fillStyle = '#4a2c2c';
+                ctx.font = 'bold 15px Arial';
                 ctx.textAlign = 'left';
-                ctx.fillText(`Afastados: ${score} / 20`, 15, 30);
-                ctx.fillText(`Vidas: ${'❤️'.repeat(lives)}`, 15, 50);
+                ctx.fillText(`Afastados: ${score} / 20`, 20, 35);
+                ctx.fillText(`Vidas: ${'❤️'.repeat(lives)}`, 20, 60);
 
                 boyfriend.draw();
                 player.draw();
+                posicionarFala();
 
                 spawnTimer++;
-                if (spawnTimer % 70 === 0 && score < 20) {
+                if (spawnTimer % 65 === 0 && score < 20) {
                     let x, y;
                     if (Math.random() < 0.5) {
                         x = Math.random() < 0.5 ? -20 : canvas.width + 20; y = Math.random() * canvas.height;
@@ -553,10 +574,18 @@
                     enemies.push(new Enemy(x, y, 'homem'));
                 }
 
+                // Atualizar Tiros
                 for (let i = bullets.length - 1; i >= 0; i--) {
                     bullets[i].update();
                     bullets[i].draw();
 
+                    // Fora do mapa? Remove
+                    if (bullets[i].x < -50 || bullets[i].x > canvas.width + 50 || bullets[i].y < -50 || bullets[i].y > canvas.height + 50) {
+                        bullets.splice(i, 1);
+                        continue;
+                    }
+
+                    // Colisão tiro com folgados
                     for (let j = enemies.length - 1; j >= 0; j--) {
                         let dx = bullets[i].x - enemies[j].x;
                         let dy = bullets[i].y - enemies[j].y;
@@ -582,6 +611,7 @@
                     }
                 }
 
+                // Atualizar Inimigos
                 for (let i = enemies.length - 1; i >= 0; i--) {
                     enemies[i].update(player.x, player.y);
                     enemies[i].draw();
@@ -607,20 +637,22 @@
                 boyfriend.draw();
                 cutsceneTimer++;
 
+                // Invoca o exército das 100 mulheres em 360 graus longe do centro
                 if (cutsceneFase === 0 && cutsceneTimer === 20) {
                     for (let i = 0; i < 100; i++) {
                         let angulo = Math.random() * Math.PI * 2;
-                        let raioSpawn = 460; 
+                        let raioSpawn = Math.max(canvas.width, canvas.height) + 50; 
                         let ex = boyfriend.x + Math.cos(angulo) * raioSpawn;
                         let ey = boyfriend.y + Math.sin(angulo) * raioSpawn;
                         
                         let novaMulher = new Enemy(ex, ey, 'mulher');
-                        novaMulher.speed = 0.95; 
+                        novaMulher.speed = 1.1; 
                         enemies.push(novaMulher);
                     }
                     cutsceneFase = 1;
                 }
 
+                // Pulverização em massa automática
                 if (cutsceneFase === 1) {
                     if (cutsceneTimer % 2 === 0 && enemies.length > 0) {
                         let alvoAleatorio = enemies[Math.floor(Math.random() * enemies.length)];
@@ -631,6 +663,7 @@
                     }
                 }
 
+                // Balas da Cutscene
                 for (let i = bullets.length - 1; i >= 0; i--) {
                     bullets[i].update();
                     bullets[i].draw();
@@ -648,6 +681,7 @@
                     }
                 }
 
+                // Movimentação das mulheres até o centro
                 enemies.forEach(e => {
                     e.update(boyfriend.x, boyfriend.y);
                     e.draw();
@@ -658,18 +692,17 @@
                     cutsceneFase = 3;
                 }
 
-                if (cutsceneFase === 3 && cutsceneTimer > 240) {
+                if (cutsceneFase === 3 && cutsceneTimer > 250) {
                     gameState = 'ENVELOPE';
                     cutsceneScreen.classList.add('hide');
                     envelopeScreen.classList.remove('hide');
-                    letter.scrollTop = 0; 
                 }
             }
 
             requestAnimationFrame(gameLoop);
         }
 
-        function lidarComTiro(clientX, clientY) {
+        function dispararDedo(clientX, clientY) {
             if (gameState !== 'PLAYING') return;
             const rect = canvas.getBoundingClientRect();
             const mouseX = ((clientX - rect.left) / rect.width) * canvas.width;
@@ -677,9 +710,9 @@
             bullets.push(new Bullet(player.x, player.y, mouseX, mouseY));
         }
 
-        canvas.addEventListener('click', (e) => lidarComTiro(e.clientX, e.clientY));
+        canvas.addEventListener('click', (e) => dispararDedo(e.clientX, e.clientY));
         canvas.addEventListener('touchstart', (e) => {
-            if(e.touches.length > 0) lidarComTiro(e.touches[0].clientX, e.touches[0].clientY);
+            if (e.touches.length > 0) dispararDedo(e.touches[0].clientX, e.touches[0].clientY);
         });
 
         document.getElementById('start-btn').addEventListener('click', initGame);
@@ -689,36 +722,45 @@
             victoryScreen.classList.add('hide');
             cutsceneScreen.classList.remove('hide');
             gameState = 'CUTSCENE';
+            
+            // Centraliza o namorado para o massacre em 360 graus
             boyfriend.x = canvas.width / 2;
             boyfriend.y = canvas.height / 2;
-            enemies = []; bullets = []; cutsceneFase = 0; cutsceneTimer = 0;
+            
+            enemies = []; 
+            bullets = []; 
+            cutsceneFase = 0; 
+            cutsceneTimer = 0;
             cutsceneText.innerHTML = "👀 Espera só para ver as gurias vindo...";
         });
 
         // MECÂNICA INTERATIVA DO ENVELOPE REALISTA
-        btnOpen.addEventListener('click', () => {
+        heartSeal.addEventListener('click', abrirEnvelope);
+        
+        function abrirEnvelope() {
             myEnvelope.classList.add('open');
             setTimeout(() => {
-                letter.classList.add('pulled');
-                btnOpen.classList.add('hide');
-                btnClose.classList.remove('hide');
+                letter.style.display = 'block';
                 envelopeTitle.innerText = "Para Minha Princesa 👑";
-                letter.scrollTop = 0; 
+                // Rola a tela automaticamente para focar no início do texto da folha
+                envelopeScreen.scrollTo({ top: 180, behavior: 'smooth' });
             }, 600);
-        });
+        }
 
         btnClose.addEventListener('click', () => {
-            letter.classList.remove('pulled');
-            setTimeout(() => {
-                myEnvelope.classList.remove('open');
-                btnClose.classList.add('hide');
-                btnOpen.classList.remove('hide');
-                envelopeTitle.innerText = "Você recebeu uma carta! 💌";
-            }, 750);
+            myEnvelope.classList.remove('open');
+            letter.style.display = 'none';
+            envelopeTitle.innerText = "Você recebeu um bilhete! 💌";
+            envelopeScreen.scrollTo({ top: 0, behavior: 'smooth' });
+            gameState = 'INTRO';
+            introScreen.classList.remove('hide');
+            envelopeScreen.classList.add('hide');
         });
 
         btnRestart.addEventListener('click', initGame);
 
+        // Inicialização primária
+        resizeCanvas();
         gameLoop();
     </script>
 </body>
