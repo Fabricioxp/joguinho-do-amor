@@ -267,13 +267,13 @@
             padding: 15px;
             background: rgba(255, 255, 255, 0.96);
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             gap: 10px;
             border-top: 1px solid #ffe4e8;
             z-index: 110;
         }
         .fixed-footer button {
-            flex: 1;
+            width: 100%;
             margin: 0;
             padding: 12px 5px;
             font-size: 14px;
@@ -285,39 +285,45 @@
     <div id="game-container">
         <div id="dialogue-box"></div>
 
+        <!-- Tela de Introdução -->
         <div id="intro-screen" class="screen">
             <h1>Ei, minha linda! ❤️</h1>
             <p>Alguns caras folgados estão tentando se aproximar! <br><br><strong>Toque na tela na direção deles para jogar um belo 🖕 bem na cara deles!</strong><br><br>Você precisa afastar 20 homens. Eu fico cuidando de você ali no canto. Não deixe eles encostarem 3 vezes!</p>
             <button id="start-btn">Começar Jogo 🌸</button>
         </div>
 
+        <!-- Tela de Game Over -->
         <div id="gameover-screen" class="screen hide">
             <h1>Poxa, meu amor! 💔</h1>
             <p>Eles chegaram muito perto... Mas eu tenho total confiança na sua mira! Vamos tentar de novo juntinhos?</p>
             <button id="retry-btn">Tentar Novamente 🔄</button>
         </div>
 
+        <!-- Tela de Vitória Temporária -->
         <div id="victory-screen" class="screen hide">
             <h1>Você conseguiu! 😍🎉</h1>
             <p>Você colocou todos os 20 no devido lugar deles! Que orgulho da minha princesa. Agora, senta aí e olha como eu resolvo as coisas por aqui...</p>
             <button id="cutscene-btn">Ver Namorado em Ação 😎</button>
         </div>
 
+        <!-- Tela de Overlay da Cutscene -->
         <div id="cutscene-screen" class="screen hide">
             <div class="cutscene-title">Defendendo Meu Amor... 🔥</div>
             <div id="cutscene-text">👀 Espera só para ver as gurias vindo...</div>
         </div>
 
+        <!-- Tela do Envelope -->
         <div id="envelope-screen" class="screen hide">
             <div class="envelope-wrapper">
                 <h1>para minha princesa</h1>
                 
-                <div class="envelope-box" id="myEnvelope" onclick="abrirEnvelope()">
+                <div class="envelope-box" id="myEnvelope" onclick="gerenciarCarta()">
                     <div class="envelope-flap"></div>
                     <div class="heart-seal" id="heartSeal">❤️</div>
                     <div class="envelope-back"></div>
                 </div>
 
+                <!-- Folha Pautada Caderno -->
                 <div id="letter">
                     <p>
                         Esse joguinho meio bobo foi só para te mostrar que o meu desejo é deixar o nosso amor sempre assim: leve e gostoso. Desde que você chegou, a minha vida ganhou muito mais cor e alegria. Agora, sim, tenho os melhores motivos do mundo para viver e para fazer você se apaixonar por mim um pouquinho mais todos os dias.<br><br>
@@ -329,8 +335,9 @@
                 </div>
             </div>
 
+            <!-- Botões Fixos Modificados -->
             <div class="fixed-footer">
-                <button id="close-envelope-btn" style="background: #777;">Fechar ↩️</button>
+                <button id="toggle-envelope-btn" onclick="gerenciarCarta()" style="background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);">Abrir Envelope 💌</button>
                 <button id="restart-game-btn" style="background: #38b000;">Jogar De Novo 🎮</button>
             </div>
         </div>
@@ -366,8 +373,7 @@
         
         const myEnvelope = document.getElementById('myEnvelope');
         const letter = document.getElementById('letter');
-        
-        const btnClose = document.getElementById('close-envelope-btn');
+        const toggleEnvelopeBtn = document.getElementById('toggle-envelope-btn');
         const btnRestart = document.getElementById('restart-game-btn');
 
         let gameState = 'INTRO';
@@ -513,6 +519,7 @@
             
             myEnvelope.classList.remove('open');
             letter.style.display = 'none';
+            toggleEnvelopeBtn.innerText = "Abrir Envelope 💌";
             dialogueBox.style.display = 'none';
 
             spawnTimer = 0;
@@ -609,7 +616,8 @@
                     let dy = enemies[i].y - player.y;
                     let dist = Math.sqrt(dx * dx + dy * dy);
 
-                    if (dist < enemies[i].radius + player.radius) {
+                    // AJUSTE: Jogadora também ganhou uma folga minúscula para não sofrer hit colado
+                    if (dist < enemies[i].radius + player.radius + 2) {
                         enemies.splice(i, 1);
                         lives--;
                         falarTexto(frasesErro[Math.floor(Math.random() * frasesErro.length)]);
@@ -626,11 +634,9 @@
                 boyfriend.draw();
                 cutsceneTimer++;
 
-                // CORREÇÃO: Nascer nas bordas de dentro da tela para você ver tudo acontecendo
                 if (cutsceneFase === 0 && cutsceneTimer === 20) {
                     for (let i = 0; i < 40; i++) {
                         let ex, ey;
-                        // Distribui as gurias ao redor da tela visível do celular
                         if (Math.random() < 0.5) {
                             ex = Math.random() < 0.5 ? 10 : canvas.width - 10;
                             ey = Math.random() * canvas.height;
@@ -640,14 +646,13 @@
                         }
                         
                         let novaMulher = new Enemy(ex, ey, 'mulher');
-                        novaMulher.speed = 1.4; // Velocidade boa para dar tempo de assistir
+                        novaMulher.speed = 1.4; 
                         enemies.push(novaMulher);
                     }
                     cutsceneFase = 1;
                 }
 
                 if (cutsceneFase === 1) {
-                    // Atira se as gurias estiverem vivas
                     if (cutsceneTimer % 4 === 0 && enemies.length > 0) {
                         let alvoAleatorio = enemies[Math.floor(Math.random() * enemies.length)];
                         bullets.push(new Bullet(boyfriend.x, boyfriend.y, alvoAleatorio.x, alvoAleatorio.y));
@@ -666,8 +671,8 @@
                         let dy = bullets[i].y - enemies[j].y;
                         let dist = Math.sqrt(dx * dx + dy * dy);
 
-                        // CORREÇÃO: Morrem perto (distância menor), mas sem encostar na colisão do boneco
-                        if (dist < enemies[j].radius + 15) {
+                        // CORREÇÃO: Morrem um pouquinho bem pouquinho mais longe (Mudado de 15 para 28 de distância)
+                        if (dist < enemies[j].radius + 28) {
                             enemies.splice(j, 1);
                             bullets.splice(i, 1);
                             break;
@@ -726,23 +731,24 @@
             cutsceneText.innerHTML = "👀 Espera só para ver as gurias vindo...";
         });
 
-        function abrirEnvelope() {
-            if (myEnvelope.classList.contains('open')) return;
-            myEnvelope.classList.add('open');
-            setTimeout(() => {
-                letter.style.display = 'block';
-                envelopeScreen.scrollTo({ top: 150, behavior: 'smooth' });
-            }, 600);
+        // NOVA FUNÇÃO: Gerencia abertura e fechamento dinâmico da carta e muda o texto do botão
+        function gerenciarCarta() {
+            if (!myEnvelope.classList.contains('open')) {
+                // Abrir
+                myEnvelope.classList.add('open');
+                toggleEnvelopeBtn.innerText = "Fechar Carta ✉️";
+                setTimeout(() => {
+                    letter.style.display = 'block';
+                    envelopeScreen.scrollTo({ top: 150, behavior: 'smooth' });
+                }, 600);
+            } else {
+                // Fechar
+                myEnvelope.classList.remove('open');
+                letter.style.display = 'none';
+                toggleEnvelopeBtn.innerText = "Abrir Envelope 💌";
+                envelopeScreen.scrollTo({ top: 0, behavior: 'smooth' });
+            }
         }
-
-        btnClose.addEventListener('click', () => {
-            myEnvelope.classList.remove('open');
-            letter.style.display = 'none';
-            envelopeScreen.scrollTo({ top: 0, behavior: 'none' });
-            gameState = 'INTRO';
-            introScreen.classList.remove('hide');
-            envelopeScreen.classList.add('hide');
-        });
 
         btnRestart.addEventListener('click', initGame);
 
