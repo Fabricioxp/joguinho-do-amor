@@ -2,17 +2,19 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meu Amor, Defenda Nosso Romance!</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Defenda Nosso Romance!</title>
     <style>
         * {
             box-sizing: border-box;
             user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
         }
         body {
             margin: 0;
             padding: 0;
-            background: linear-gradient(135deg, #ffe6e6, #ffb3b3);
+            background: #121212;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
             justify-content: center;
@@ -22,17 +24,21 @@
         }
         #game-container {
             position: relative;
-            width: 800px;
-            height: 600px;
+            width: 100vw;
+            height: 100vh;
+            max-width: 450px;
+            max-height: 850px;
             background-color: #fff5f5;
-            border: 4px solid #ff4d6d;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            border: 2px solid #ff4d6d;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             overflow: hidden;
+            aspect-ratio: 9 / 16;
         }
         canvas {
             display: block;
             background-color: #fff9f9;
+            width: 100%;
+            height: 100%;
         }
         /* Telas Sobrepostas */
         .screen {
@@ -41,116 +47,107 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(255, 240, 240, 0.95);
+            background: rgba(255, 240, 240, 0.98);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 40px;
+            padding: 25px;
             text-align: center;
             z-index: 10;
-            transition: all 0.3s ease;
         }
         .hide {
             display: none !important;
         }
         h1 {
             color: #ff4d6d;
-            font-size: 32px;
-            margin-bottom: 20px;
+            font-size: 26px;
+            margin-bottom: 15px;
         }
         p {
             color: #4a4a4a;
-            font-size: 18px;
-            line-height: 1.6;
-            margin-bottom: 30px;
-            max-width: 600px;
+            font-size: 16px;
+            line-height: 1.5;
+            margin-bottom: 25px;
         }
         button {
             background-color: #ff4d6d;
             color: white;
             border: none;
-            padding: 15px 35px;
-            font-size: 20px;
+            padding: 14px 30px;
+            font-size: 18px;
             font-weight: bold;
             border-radius: 50px;
             cursor: pointer;
             box-shadow: 0 5px 15px rgba(255, 77, 109, 0.4);
-            transition: transform 0.2s, background-color 0.2s;
-        }
-        button:hover {
-            background-color: #ff758f;
-            transform: scale(1.05);
         }
         /* Balão de Fala do Namorado no Jogo */
         #dialogue-box {
             position: absolute;
-            bottom: 20px;
-            left: 20px;
+            top: 80px;
+            left: 5%;
+            width: 90%;
             background: white;
             border: 3px solid #ff4d6d;
             border-radius: 15px;
-            padding: 12px 20px;
-            max-width: 300px;
+            padding: 10px 15px;
             font-weight: bold;
+            font-size: 14px;
             color: #ff4d6d;
             box-shadow: 0 5px 10px rgba(0,0,0,0.1);
             pointer-events: none;
             display: none;
+            text-align: center;
+            z-index: 5;
         }
         #dialogue-box::after {
             content: '';
             position: absolute;
-            bottom: 100%;
-            left: 30px;
+            top: 100%;
+            left: 20%;
             border: 10px solid transparent;
-            border-bottom-color: #ff4d6d;
+            border-top-color: #ff4d6d;
         }
         /* Estilo da Cutscene */
         #cutscene-text {
-            font-size: 22px;
+            font-size: 18px;
             font-weight: bold;
             color: #ff4d6d;
             margin-top: 20px;
             min-height: 60px;
+            padding: 0 10px;
         }
     </style>
 </head>
 <body>
 
     <div id="game-container">
-        <!-- Balão de diálogo do namorado -->
         <div id="dialogue-box"></div>
 
-        <!-- Tela de Introdução -->
         <div id="intro-screen" class="screen">
             <h1>Defenda o Nosso Amor! ❤️</h1>
-            <p>Oi, minha linda! Alguns caras folgados estão tentando se aproximar de você. Use o seu mouse para mirar e <strong>clique para atirar corações neles</strong>! <br><br>Você precisa afastar 10 homens para vencer. Eu estarei ali no cantinho torcendo por você (e de olho, claro!). Cuidado para não deixar eles encostarem 3 vezes!</p>
+            <p>Oi, minha linda! Alguns caras folgados estão tentando se aproximar de você. <br><br><strong>Toque na tela na direção deles para mandar um belo 🖕 bem na cara deles!</strong><br><br>Você precisa afastar 10 homens para vencer. Eu estarei ali embaixo cuidando. Não deixe eles encostarem 3 vezes!</p>
             <button id="start-btn">Começar Jogo</button>
         </div>
 
-        <!-- Tela de Game Over -->
         <div id="gameover-screen" class="screen hide">
             <h1>Poxa, amor! 💔</h1>
             <p>Eles chegaram muito perto... Mas eu confio em você! Vamos tentar de novo?</p>
             <button id="retry-btn">Tentar Novamente</button>
         </div>
 
-        <!-- Tela de Transição / Parabéns -->
         <div id="victory-screen" class="screen hide">
             <h1>Você conseguiu! 😍🎉</h1>
-            <p>Você espantou todos eles! Que orgulho da minha namorada. Agora, deixa que eu te mostro como eu cuido das coisas do meu lado...</p>
+            <p>Você botou todos eles no lugar deles! Que orgulho da minha namorada. Agora, deixa que eu te mostro como eu cuido das coisas do meu lado...</p>
             <button id="cutscene-btn">Ver o Namorado em Ação</button>
         </div>
 
-        <!-- Tela da Cutscene -->
         <div id="cutscene-screen" class="screen hide">
-            <h1>Enquanto isso, com o seu Namorado... 😎</h1>
+            <h1>Enquanto isso... 😎</h1>
             <div id="cutscene-text">Preparando defesas...</div>
         </div>
 
-        <!-- O Jogo em si -->
-        <canvas id="gameCanvas" width="800" height="600"></canvas>
+        <canvas id="gameCanvas" width="360" height="640"></canvas>
     </div>
 
     <script>
@@ -166,18 +163,18 @@
         const cutsceneText = document.getElementById('cutscene-text');
 
         // Configurações do Jogo
-        let gameState = 'INTRO'; // INTRO, PLAYING, GAMEOVER, VICTORY, CUTSCENE
+        let gameState = 'INTRO';
         let score = 0;
         let lives = 3;
-        let player, boyfriend, enemies, bullets, particles;
+        let player, boyfriend, enemies, bullets;
         let spawnTimer;
         let dialogueTimer;
 
         // Frases
         const frasesErro = [
             "Amooor?? Vai deixar esses caras chegarem perto de você? 🤨",
-            "Ei! Sai de perto da minha namorada! Atira nele, amor! 😡",
-            "Olha o respeito, rapaz! Vai tomar flechada de coração! 🏹"
+            "Ei! Sai de perto da minha namorada! Manda o dedo nele, amor! 😡",
+            "Olha o respeito, rapaz! Toma esse 🖕 bem no meio do peito!"
         ];
 
         const frasesAcerto = [
@@ -186,44 +183,42 @@
             "Isso! Mostra pra eles que você já tem dono! ❤️"
         ];
 
-        // Classes do Jogo
         class PlayerCharacter {
             constructor(x, y, name, color) {
                 this.x = x;
                 this.y = y;
-                this.radius = 20;
+                this.radius = 18;
                 this.name = name;
                 this.color = color;
             }
             draw() {
-                // Corpo/Círculo principal
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
                 ctx.fillStyle = this.color;
                 ctx.fill();
                 ctx.closePath();
 
-                // Olhinhos simples
+                // Olhinhos
                 ctx.beginPath();
-                ctx.arc(this.x - 6, this.y - 4, 3, 0, Math.PI * 2);
-                ctx.arc(this.x + 6, this.y - 4, 3, 0, Math.PI * 2);
+                ctx.arc(this.x - 5, this.y - 3, 2.5, 0, Math.PI * 2);
+                ctx.arc(this.x + 5, this.y - 3, 2.5, 0, Math.PI * 2);
                 ctx.fillStyle = '#fff';
                 ctx.fill();
                 ctx.closePath();
 
                 // Sorriso
                 ctx.beginPath();
-                ctx.arc(this.x, this.y + 4, 5, 0, Math.PI);
+                ctx.arc(this.x, this.y + 3, 4, 0, Math.PI);
                 ctx.strokeStyle = '#fff';
                 ctx.lineWidth = 2;
                 ctx.stroke();
                 ctx.closePath();
 
-                // Nome acima do boneco
+                // Nome acima
                 ctx.fillStyle = '#4a4a4a';
-                ctx.font = 'bold 14px Arial';
+                ctx.font = 'bold 12px Arial';
                 ctx.textAlign = 'center';
-                ctx.fillText(this.name, this.x, this.y - 28);
+                ctx.fillText(this.name, this.x, this.y - 25);
             }
         }
 
@@ -231,8 +226,8 @@
             constructor(x, y, type) {
                 this.x = x;
                 this.y = y;
-                this.radius = 18;
-                this.speed = 1.2;
+                this.radius = 16;
+                this.speed = 1.3;
                 this.name = type === 'homem' ? 'Homem 🚫' : 'Mulher 🚫';
                 this.color = type === 'homem' ? '#4ea8de' : '#ff70a6';
             }
@@ -250,11 +245,10 @@
                 ctx.fill();
                 ctx.closePath();
 
-                // Nome acima do inimigo
                 ctx.fillStyle = '#777';
-                ctx.font = '12px Arial';
+                ctx.font = '11px Arial';
                 ctx.textAlign = 'center';
-                ctx.fillText(this.name, this.x, this.y - 24);
+                ctx.fillText(this.name, this.x, this.y - 22);
             }
         }
 
@@ -262,8 +256,8 @@
             constructor(x, y, targetX, targetY) {
                 this.x = x;
                 this.y = y;
-                this.radius = 8;
-                this.speed = 6;
+                this.radius = 12;
+                this.speed = 7;
                 let dx = targetX - this.x;
                 let dy = targetY - this.y;
                 let dist = Math.sqrt(dx * dx + dy * dy);
@@ -275,32 +269,24 @@
                 this.y += this.vy;
             }
             draw() {
-                // Desenha em formato de Coraçãozinho
-                ctx.fillStyle = '#ff4d6d';
-                ctx.beginPath();
-                ctx.arc(this.x - 4, this.y, 5, 0, Math.PI*2);
-                ctx.arc(this.x + 4, this.y, 5, 0, Math.PI*2);
-                ctx.fill();
-                ctx.beginPath();
-                ctx.moveTo(this.x - 8, this.y + 2);
-                ctx.lineTo(this.x, this.y + 11);
-                ctx.lineTo(this.x + 8, this.y + 2);
-                ctx.closePath();
-                ctx.fill();
+                // Renderiza o emoji de dedo do meio
+                ctx.font = '22px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('🖕', this.x, this.y);
             }
         }
 
-        // Inicializar/Reiniciar o Jogo
         function initGame() {
             score = 0;
             lives = 3;
-            player = new PlayerCharacter(canvas.width / 2 + 100, canvas.height / 2, 'Você 💖', '#ff4d6d');
-            boyfriend = new PlayerCharacter(80, canvas.height - 80, 'Namorado (Eu) 👦', '#38b000');
+            // Posicionamento vertical otimizado para celular
+            player = new PlayerCharacter(canvas.width / 2, canvas.height / 2 - 40, 'Você 💖', '#ff4d6d');
+            boyfriend = new PlayerCharacter(70, canvas.height - 60, 'Namorado (Eu) 👦', '#38b000');
             enemies = [];
             bullets = [];
             gameState = 'PLAYING';
             
-            // Ocultar telas
             introScreen.classList.add('hide');
             gameoverScreen.classList.add('hide');
             victoryScreen.classList.add('hide');
@@ -310,7 +296,6 @@
             spawnTimer = 0;
         }
 
-        // Mostrar fala do namorado
         function falar(frases) {
             const fraseAleatoria = frases[Math.floor(Math.random() * frases.length)];
             dialogueBox.innerText = fraseAleatoria;
@@ -319,62 +304,55 @@
             clearTimeout(dialogueTimer);
             dialogueTimer = setTimeout(() => {
                 dialogueBox.style.display = 'none';
-            }, 2500);
+            }, 2200);
         }
 
-        // Gerar inimigos fora da tela
         function spawnEnemy(type = 'homem') {
             let x, y;
             if (Math.random() < 0.5) {
-                x = Math.random() < 0.5 ? -30 : canvas.width + 30;
+                x = Math.random() < 0.5 ? -20 : canvas.width + 20;
                 y = Math.random() * canvas.height;
             } else {
                 x = Math.random() * canvas.width;
-                y = Math.random() < 0.5 ? -30 : canvas.height + 30;
+                y = Math.random() < 0.5 ? -20 : canvas.height + 20;
             }
             enemies.push(new Enemy(x, y, type));
         }
 
-        // Loop Principal do Jogo
         function gameLoop() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             if (gameState === 'PLAYING') {
                 // HUD
                 ctx.fillStyle = '#4a4a4a';
-                ctx.font = 'bold 18px Arial';
+                ctx.font = 'bold 14px Arial';
                 ctx.textAlign = 'left';
-                ctx.fillText(`Homens Afastados: ${score} / 10`, 20, 35);
-                ctx.fillText(`Vidas: ${'❤️'.repeat(lives)}`, 20, 65);
+                ctx.fillText(`Afastados: ${score} / 10`, 15, 30);
+                ctx.fillText(`Vidas: ${'❤️'.repeat(lives)}`, 15, 50);
 
-                // Desenhar Personagens fixos
                 boyfriend.draw();
                 player.draw();
 
-                // Spawn de Inimigos
                 spawnTimer++;
-                if (spawnTimer % 90 === 0 && score < 10) { // Cria um a cada 1.5 segundos
+                if (spawnTimer % 80 === 0 && score < 10) {
                     spawnEnemy('homem');
                 }
 
-                // Atualizar e desenhar Tiros
                 for (let i = bullets.length - 1; i >= 0; i--) {
                     bullets[i].update();
                     bullets[i].draw();
 
-                    // Remover tiros fora da tela
-                    if (bullets[i].x < 0 || bullets[i].x > canvas.width || bullets[i].y < 0 || bullets[i].y > canvas.height) {
+                    if (bullets[i].x < -50 || bullets[i].x > canvas.width + 50 || bullets[i].y < -50 || bullets[i].y > canvas.height + 50) {
                         bullets.splice(i, 1);
                         continue;
                     }
 
-                    // Colisão tiro com inimigo
                     for (let j = enemies.length - 1; j >= 0; j--) {
                         let dx = bullets[i].x - enemies[j].x;
                         let dy = bullets[i].y - enemies[j].y;
                         let dist = Math.sqrt(dx * dx + dy * dy);
 
-                        if (dist < bullets[i].radius + enemies[j].radius) {
+                        if (dist < enemies[j].radius + 12) {
                             enemies.splice(j, 1);
                             bullets.splice(i, 1);
                             score++;
@@ -389,12 +367,10 @@
                     }
                 }
 
-                // Atualizar e desenhar Inimigos
                 for (let i = enemies.length - 1; i >= 0; i--) {
                     enemies[i].update(player.x, player.y);
                     enemies[i].draw();
 
-                    // Colisão inimigo com a Jogadora
                     let dx = enemies[i].x - player.x;
                     let dy = enemies[i].y - player.y;
                     let dist = Math.sqrt(dx * dx + dy * dy);
@@ -411,11 +387,9 @@
                     }
                 }
             } else if (gameState === 'CUTSCENE') {
-                // Desenho do cenário da cutscene automático
                 boyfriend.draw();
                 player.draw();
 
-                // Desenhar elementos da cutscene
                 enemies.forEach(e => {
                     e.update(boyfriend.x, boyfriend.y);
                     e.draw();
@@ -430,19 +404,26 @@
             requestAnimationFrame(gameLoop);
         }
 
-        // Sistema de cliques para atirar
-        canvas.addEventListener('click', (e) => {
+        // Função unificada para tiros (Toque/Clique)
+        function lidarComTiro(clientX, clientY) {
             if (gameState !== 'PLAYING') return;
-
-            // Detectar clique correto dentro do canvas absoluto
             const rect = canvas.getBoundingClientRect();
-            const mouseX = e.clientX - rect.left;
-            const mouseY = e.clientY - rect.top;
+            
+            // Converte coordenadas da tela para dentro da resolução do Canvas (360x640)
+            const mouseX = ((clientX - rect.left) / rect.width) * canvas.width;
+            const mouseY = ((clientY - rect.top) / rect.height) * canvas.height;
 
             bullets.push(new Bullet(player.x, player.y, mouseX, mouseY));
+        }
+
+        // Eventos de Input para Celular e PC
+        canvas.addEventListener('click', (e) => lidarComTiro(e.clientX, e.clientY));
+        canvas.addEventListener('touchstart', (e) => {
+            if(e.touches.length > 0) {
+                lidarComTiro(e.touches[0].clientX, e.touches[0].clientY);
+            }
         });
 
-        // Eventos dos Botões
         document.getElementById('start-btn').addEventListener('click', initGame);
         document.getElementById('retry-btn').addEventListener('click', initGame);
         
@@ -451,10 +432,11 @@
             cutsceneScreen.classList.remove('hide');
             gameState = 'CUTSCENE';
             
-            // Mudar posição do namorado para o centro para a cena ficar top
-            boyfriend.x = canvas.width / 2 - 100;
-            boyfriend.y = canvas.height / 2;
-            player.x = canvas.width / 2 + 100; // Ela assiste do lado
+            // Reajusta posições para a Cutscene vertical
+            boyfriend.x = canvas.width / 2;
+            boyfriend.y = canvas.height / 2 + 50;
+            player.x = canvas.width / 2;
+            player.y = canvas.height / 2 - 120; // Assiste de cima protegida
             
             enemies = [];
             bullets = [];
@@ -462,39 +444,37 @@
             executarCutscene();
         });
 
-        // Lógica Visual e Textos da Cutscene Autoguiada
         function executarCutscene() {
             let passo = 0;
 
             const t1 = setInterval(() => {
                 if (passo === 0) {
-                    cutsceneText.innerHTML = "🚨 ATENÇÃO! Uma horda de mulheres selvagens apareceu para falar com o seu namorado!";
-                    spawnEnemy('mulher');
-                    spawnEnemy('mulher');
+                    cutsceneText.innerHTML = "🚨 ATENÇÃO! Várias garotas apareceram para falar com o seu namorado!";
+                    // Spawna inimigas vindo das bordas de baixo perto do namorado
+                    enemies.push(new Enemy(20, canvas.height - 20, 'mulher'));
+                    enemies.push(new Enemy(canvas.width - 20, canvas.height - 20, 'mulher'));
                 } 
                 else if (passo === 1) {
-                    cutsceneText.innerHTML = "💬 <strong>Namorado diz:</strong> Opa, opa, opa! Nem pensem em chegar perto! 🖐️";
+                    cutsceneText.innerHTML = "💬 <strong>Eu digo:</strong> Opa, sai fora! Nem pensem em dar um passo! 🖐️";
                 }
                 else if (passo === 2) {
-                    cutsceneText.innerHTML = "💥 *POW!* *BOOM!* 💥";
-                    // Atira automaticamente em todas
+                    cutsceneText.innerHTML = "💥 *MANDANDO SEU PRESENTINHO!* 💥";
                     enemies.forEach(e => {
                         bullets.push(new Bullet(boyfriend.x, boyfriend.y, e.x, e.y));
                     });
                 }
                 else if (passo === 3) {
-                    enemies = []; // Limpa elas
-                    cutsceneText.innerHTML = "😎 <strong>Namorado diz:</strong> É assim que se faz, hihihi! Aqui só tem espaço para uma princesa.";
+                    enemies = [];
+                    cutsceneText.innerHTML = "😎 <strong>Eu digo:</strong> É assim que se faz, hihihi! Só tenho olhos para a minha princesa.";
                 }
                 else if (passo === 4) {
-                    cutsceneText.innerHTML = "❤️ <strong>Namorado diz:</strong> Eu te amo, meu amor! Obrigado por me proteger e saiba que eu sempre te protegerei! ❤️";
+                    cutsceneText.innerHTML = "❤️ Te amo, minha linda! Obrigado por me proteger e saiba que eu sempre vou te proteger de tudo! ❤️";
                     clearInterval(t1);
                 }
                 passo++;
             }, 2500);
         }
 
-        // Inicia o loop gráfico do Canvas
         gameLoop();
     </script>
 </body>
