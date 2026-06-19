@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Defenda Nosso Romance!</title>
+    <title>Defenda Nosso Espaço!</title>
     <style>
         * {
             box-sizing: border-box;
@@ -103,6 +103,7 @@
             border-radius: 50px;
             cursor: pointer;
             box-shadow: 0 5px 15px rgba(255, 77, 109, 0.4);
+            z-index: 15;
         }
         #dialogue-box {
             position: absolute;
@@ -142,6 +143,69 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             margin-bottom: 20px;
         }
+
+        /* ESTILOS DO ENVELOPE E DA CARTA ANIMADA */
+        #envelope-screen {
+            background: rgba(255, 240, 240, 0.98);
+            z-index: 30;
+        }
+        .envelope-wrapper {
+            position: relative;
+            width: 200px;
+            height: 140px;
+            background-color: #ffb3c1;
+            border: 3px solid #ff4d6d;
+            border-radius: 0px 0px 10px 10px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        /* Selo de coração no envelope */
+        .envelope-wrapper::after {
+            content: '❤️';
+            font-size: 28px;
+            position: absolute;
+            z-index: 5;
+            top: 35%;
+        }
+        #letter {
+            position: absolute;
+            bottom: 10px;
+            width: 180px;
+            height: 230px;
+            background: #ffffff;
+            border: 2px solid #ffccd5;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.1);
+            z-index: 2;
+            opacity: 0;
+            transform: translateY(0);
+            transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.8s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        #letter.open {
+            opacity: 1;
+            transform: translateY(-130px);
+            z-index: 12;
+        }
+        #letter h3 {
+            margin: 0 0 10px 0;
+            color: #ff4d6d;
+            font-size: 18px;
+        }
+        #letter p {
+            margin: 0;
+            color: #4a4a4a;
+            font-size: 14px;
+            line-height: 1.4;
+        }
     </style>
 </head>
 <body>
@@ -150,8 +214,8 @@
         <div id="dialogue-box"></div>
 
         <div id="intro-screen" class="screen">
-            <h1>Defenda o Nosso Amor! ❤️</h1>
-            <p>Oi, minha linda! Alguns caras folgados estão se aproximando. <br><br><strong>Toque na tela na direção deles para mandar um belo 🖕 bem na cara deles!</strong><br><br>Você precisa afastar 20 homens para vencer. Eu estarei ali embaixo cuidando. Não deixe eles encostarem 3 vezes!</p>
+            <h1>Ei, minha linda! ❤️</h1>
+            <p>Alguns caras folgados estão se aproximando. <br><br><strong>Toque na tela na direção deles para mandar um belo 🖕 bem na cara deles!</strong><br><br>Você precisa afastar 20 homens para vencer. Eu estarei ali embaixo cuidando. Não deixe eles encostarem 3 vezes!</p>
             <button id="start-btn">Começar Jogo</button>
         </div>
 
@@ -163,13 +227,24 @@
 
         <div id="victory-screen" class="screen hide">
             <h1>Você conseguiu! 😍🎉</h1>
-            <p>Você botou todos os 20 no lugar deles! Que orgulho da minha namorada. Agora, senta aí e assiste como eu cuido do meu lado...</p>
+            <p>Você botou todos os 20 no lugar deles! Que orgulho da minha namorada. Agora, olha como eu resolvo as coisas por aqui...</p>
             <button id="cutscene-btn">Ver o Namorado em Ação</button>
         </div>
 
         <div id="cutscene-screen" class="screen hide">
             <div class="cutscene-title">Enquanto isso... 😎</div>
-            <div id="cutscene-text">🚨 CUIDADO! Uma multidão apareceu!</div>
+            <div id="cutscene-text">👀 Espera só para ver as gurias vindo...</div>
+        </div>
+
+        <div id="envelope-screen" class="screen hide">
+            <h1>Para Minha Princesa 👑</h1>
+            <div class="envelope-wrapper">
+                <div id="letter">
+                    <h3>Sobrescreva texte</h3>
+                    <p>Aqui entrará a sua declaração personalizada quando você me enviar! ❤️</p>
+                </div>
+            </div>
+            <button id="open-envelope-btn">Abrir Envelope 💌</button>
         </div>
 
         <canvas id="gameCanvas" width="360" height="640"></canvas>
@@ -183,6 +258,7 @@
         const gameoverScreen = document.getElementById('gameover-screen');
         const victoryScreen = document.getElementById('victory-screen');
         const cutsceneScreen = document.getElementById('cutscene-screen');
+        const envelopeScreen = document.getElementById('envelope-screen');
         const dialogueBox = document.getElementById('dialogue-box');
         const cutsceneText = document.getElementById('cutscene-text');
 
@@ -194,16 +270,16 @@
         
         let cutsceneTimer = 0;
         let cutsceneFase = 0;
-        let ultimoMilestoneFfala = 0;
+        let ultimoMilestoneFala = 0;
 
-        // Falas dinâmicas a cada 3 abates
+        // Falas dinâmicas a cada 3 abates na fase dela
         const falasProgresso = {
             3: "Isso aí amor! Começou bem! 🥰",
             6: "Manda esses folgados embora! 😡",
             9: "Minha namorada é braba demais! 😎",
             12: "Nossa, que mira perfeita, vida! ❤️",
             15: "Quase lá, bota eles pra correr! 🔥",
-            18: "Defende o nosso romance!! 💖"
+            18: "Acaba com eles, tá quase lá! 💖"
         };
 
         const frasesErro = [
@@ -252,7 +328,7 @@
                 this.x = x;
                 this.y = y;
                 this.radius = 16;
-                this.speed = 1.6; // NPCs um pouco mais rápidos e ágeis
+                this.speed = 1.7; // Velocidade ligeiramente aumentada
                 this.name = type === 'homem' ? 'Homem 🚫' : 'Mulher 🚫';
                 this.color = type === 'homem' ? '#4ea8de' : '#ff70a6';
             }
@@ -284,7 +360,7 @@
                 this.x = x;
                 this.y = y;
                 this.radius = 12;
-                this.speed = 9;
+                this.speed = 10;
                 let dx = targetX - this.x;
                 let dy = targetY - this.y;
                 let dist = Math.sqrt(dx * dx + dy * dy);
@@ -306,7 +382,7 @@
         function initGame() {
             score = 0;
             lives = 3;
-            ultimoMilestoneFfala = 0;
+            ultimoMilestoneFala = 0;
             player = new PlayerCharacter(canvas.width / 2, canvas.height / 2 - 40, 'Você 💖', '#ff4d6d');
             boyfriend = new PlayerCharacter(70, canvas.height - 60, 'Namorado (Eu) 👦', '#38b000');
             enemies = [];
@@ -317,6 +393,8 @@
             gameoverScreen.classList.add('hide');
             victoryScreen.classList.add('hide');
             cutsceneScreen.classList.add('hide');
+            envelopeScreen.classList.add('hide');
+            document.getElementById('letter').classList.remove('open');
             dialogueBox.style.display = 'none';
 
             spawnTimer = 0;
@@ -364,8 +442,7 @@
                 player.draw();
 
                 spawnTimer++;
-                // Ritmo de surgimento ligeiramente acelerado
-                if (spawnTimer % 75 === 0 && score < 20) {
+                if (spawnTimer % 70 === 0 && score < 20) {
                     spawnEnemy('homem');
                 }
 
@@ -388,9 +465,8 @@
                             bullets.splice(i, 1);
                             score++;
 
-                            // Atualiza fala a cada 3 abates
-                            if (score % 3 === 0 && falasProgresso[score] && score !== ultimoMilestoneFfala) {
-                                ultimoMilestoneFfala = score;
+                            if (score % 3 === 0 && falasProgresso[score] && score !== ultimoMilestoneFala) {
+                                ultimoMilestoneFala = score;
                                 falarTexto(falasProgresso[score]);
                             }
 
@@ -426,32 +502,30 @@
                 }
             } 
             else if (gameState === 'CUTSCENE') {
-                // APENAS SEU BONECO NO MEIO DA TELA
+                // APENAS O SEU BONECO NO CENTRO DA TELA
                 boyfriend.draw();
 
                 cutsceneTimer++;
 
-                // Passo 0: Invoca 50 mulheres vindo de todas as direções (360 graus)
+                // Passo 0: Invoca exatamente 100 mulheres vindo de todos os cantos (360 graus)
                 if (cutsceneFase === 0 && cutsceneTimer === 20) {
-                    for (let i = 0; i < 50; i++) {
+                    for (let i = 0; i < 100; i++) {
                         let angulo = Math.random() * Math.PI * 2;
-                        // Nascem fora dos limites visíveis da tela circularmente
-                        let raioSpawn = 400; 
+                        let raioSpawn = 420; 
                         let ex = boyfriend.x + Math.cos(angulo) * raioSpawn;
                         let ey = boyfriend.y + Math.sin(angulo) * raioSpawn;
                         
                         let novaMulher = new Enemy(ex, ey, 'mulher');
-                        novaMulher.speed = 1.1; // Velocidade ideal para aglomeração cênica
+                        novaMulher.speed = 1.3; 
                         enemies.push(novaMulher);
                     }
                     cutsceneFase = 1;
                 }
 
-                // Passo 1: Seu boneco metralha emojis para todos os lados automaticamente em alta velocidade
+                // Passo 1: Disparos automatizados insanos em área periférica completa
                 if (cutsceneFase === 1) {
-                    // Atira a cada 4 frames criando uma rajada insana em área
-                    if (cutsceneTimer % 4 === 0 && enemies.length > 0) {
-                        // Escolhe alvos aleatórios dentre as que estão vivas para disparar cirurgicamente
+                    // Cadência ultrarápida (atira a cada 3 quadros)
+                    if (cutsceneTimer % 3 === 0 && enemies.length > 0) {
                         let alvoAleatorio = enemies[Math.floor(Math.random() * enemies.length)];
                         bullets.push(new Bullet(boyfriend.x, boyfriend.y, alvoAleatorio.x, alvoAleatorio.y));
                     }
@@ -461,7 +535,7 @@
                     }
                 }
 
-                // Atualização física e colisão de projéteis
+                // Mecânica física das balas na cutscene
                 for (let i = bullets.length - 1; i >= 0; i--) {
                     bullets[i].update();
                     bullets[i].draw();
@@ -479,22 +553,22 @@
                     }
                 }
 
-                // Move e desenha a horda de mulheres marchando para o centro
+                // Move horda em 360° na sua direção
                 enemies.forEach(e => {
                     e.update(boyfriend.x, boyfriend.y);
                     e.draw();
                 });
 
-                // Passo 2: Tudo limpo, exibe a sua fala triunfante na legenda
+                // Passo 2: Quando todas somem da tela após os tiros, ativa a fala e a transição do envelope
                 if (cutsceneFase === 2) {
                     cutsceneText.innerHTML = "😎 <strong>É assim que se faz, hihihi! Matando geral!</strong>";
                     cutsceneFase = 3;
                 }
 
-                // Passo 3: Declaração romântica final na tela
-                if (cutsceneFase === 3 && cutsceneTimer > 340) {
-                    cutsceneText.innerHTML = "❤️ Viu só? Aqui ninguém entra! Te amo muito, minha princesa perfeita! ❤️";
-                    cutsceneFase = 4;
+                if (cutsceneFase === 3 && cutsceneTimer > 240) {
+                    gameState = 'ENVELOPE';
+                    cutsceneScreen.classList.add('hide');
+                    envelopeScreen.classList.remove('hide');
                 }
             }
 
@@ -524,16 +598,20 @@
             cutsceneScreen.classList.remove('hide');
             gameState = 'CUTSCENE';
             
-            // Centraliza o seu boneco perfeitamente para enfrentar a horda em 360°
+            // Centraliza o seu boneco perfeitamente para o combate cênico 360°
             boyfriend.x = canvas.width / 2;
             boyfriend.y = canvas.height / 2;
             
-            // Esvazia referências anteriores
             enemies = [];
             bullets = [];
             cutsceneFase = 0;
             cutsceneTimer = 0;
             cutsceneText.innerHTML = "👀 Espera só para ver as gurias vindo...";
+        });
+
+        // Evento de clique para disparar a animação do envelope subindo
+        document.getElementById('open-envelope-btn').addEventListener('click', () => {
+            document.getElementById('letter').classList.add('open');
         });
 
         gameLoop();
