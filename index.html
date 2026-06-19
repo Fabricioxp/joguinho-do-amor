@@ -144,7 +144,7 @@
 
         <div id="cutscene-screen" class="screen hide">
             <h1>Enquanto isso... 😎</h1>
-            <div id="cutscene-text">...</div>
+            <div id="cutscene-text"></div>
         </div>
 
         <canvas id="gameCanvas" width="360" height="640"></canvas>
@@ -167,8 +167,10 @@
         let player, boyfriend, enemies, bullets;
         let spawnTimer;
         let dialogueTimer;
-        let cutsceneStage = 0;
+        
+        // Controle da linha do tempo da cutscene automática
         let cutsceneTimer = 0;
+        let cutsceneFase = 0;
 
         const frasesErro = [
             "Amooor?? Vai deixar esses caras chegarem perto? 🤨",
@@ -223,7 +225,7 @@
                 this.x = x;
                 this.y = y;
                 this.radius = 16;
-                this.speed = 0.6; // NPCs bem devagar
+                this.speed = 1.0; // Acelerado um pouco mais os NPCs conforme solicitado
                 this.name = type === 'homem' ? 'Homem 🚫' : 'Mulher 🚫';
                 this.color = type === 'homem' ? '#4ea8de' : '#ff70a6';
             }
@@ -255,7 +257,7 @@
                 this.x = x;
                 this.y = y;
                 this.radius = 12;
-                this.speed = 7;
+                this.speed = 8;
                 let dx = targetX - this.x;
                 let dy = targetY - this.y;
                 let dist = Math.sqrt(dx * dx + dy * dy);
@@ -326,7 +328,6 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             if (gameState === 'PLAYING') {
-                // HUD Geral
                 ctx.fillStyle = '#4a4a4a';
                 ctx.font = 'bold 14px Arial';
                 ctx.textAlign = 'left';
@@ -337,7 +338,7 @@
                 player.draw();
 
                 spawnTimer++;
-                if (spawnTimer % 110 === 0 && score < 10) {
+                if (spawnTimer % 90 === 0 && score < 10) {
                     spawnEnemy('homem');
                 }
 
@@ -393,32 +394,30 @@
                 }
             } 
             else if (gameState === 'CUTSCENE') {
-                // RENDERIZACÃO DA CUTSCENE AUTOMÁTICA (ESTILO VÍDEO)
+                // RENDERIZACÃO DA CUTSCENE ESTILO VÍDEO COMPLETO E AUTOMÁTICO
                 boyfriend.draw();
                 player.draw();
 
-                // Lógica cronometrada interna do "vídeo"
                 cutsceneTimer++;
 
-                // Passo 0: Início e surgimento das mulheres (andando)
-                if (cutsceneStage === 0) {
-                    cutsceneText.innerHTML = "👀 Olha lá de longe...";
-                    enemies.push(new Enemy(30, canvas.height + 10, 'mulher'));
-                    enemies.push(new Enemy(canvas.width - 30, canvas.height + 10, 'mulher'));
-                    enemies.forEach(e => e.speed = 0.5);
-                    cutsceneStage = 1;
+                // Evento 1: Criação física das mulheres andando aceleradas na tela
+                if (cutsceneFase === 0 && cutsceneTimer === 30) {
+                    enemies.push(new Enemy(40, canvas.height + 20, 'mulher'));
+                    enemies.push(new Enemy(canvas.width - 40, canvas.height + 20, 'mulher'));
+                    enemies.forEach(e => e.speed = 1.2); // Velocidade de corrida ajustada
+                    cutsceneFase = 1;
                 }
 
-                // Passo 1: Espera elas chegarem mais perto e atira automaticamente
-                if (cutsceneStage === 1 && cutsceneTimer > 120) {
-                    // Seu personagem dispara os emojis automaticamente na direção delas
+                // Evento 2: Disparos automatizados físicos do seu boneco na direção delas
+                if (cutsceneFase === 1 && cutsceneTimer === 90) {
                     enemies.forEach(e => {
                         bullets.push(new Bullet(boyfriend.x, boyfriend.y, e.x, e.y));
+                        bullets.push(new Bullet(boyfriend.x, boyfriend.y, e.x, e.y + 30)); // rajada dupla pra garantir o efeito visual
                     });
-                    cutsceneStage = 2;
+                    cutsceneFase = 2;
                 }
 
-                // Atualizar balas automáticas da cena
+                // Processamento Físico Real das balas na Cutscene (Move, Desenha e Colide)
                 for (let i = bullets.length - 1; i >= 0; i--) {
                     bullets[i].update();
                     bullets[i].draw();
@@ -428,6 +427,7 @@
                         let dy = bullets[i].y - enemies[j].y;
                         let dist = Math.sqrt(dx * dx + dy * dy);
 
+                        // Se a bala acertar a NPC fisicamente, ela morre e some
                         if (dist < enemies[j].radius + 12) {
                             enemies.splice(j, 1);
                             bullets.splice(i, 1);
@@ -436,22 +436,22 @@
                     }
                 }
 
-                // Movimenta as mulheres em sua direção
+                // Move e renderiza as mulheres perseguindo você
                 enemies.forEach(e => {
                     e.update(boyfriend.x, boyfriend.y);
                     e.draw();
                 });
 
-                // Passo 2: Quando os inimigos somem, você manda a frase icônica
-                if (cutsceneStage === 2 && enemies.length === 0) {
+                // Evento 3: Assim que as balas limpam os NPCs, exibe a sua fala na legenda
+                if (cutsceneFase === 2 && enemies.length === 0) {
                     cutsceneText.innerHTML = "😎 <strong>É assim que se faz, hihihi!</strong>";
-                    cutsceneStage = 3;
+                    cutsceneFase = 3;
                 }
 
-                // Passo 3: Declaração de amor final para fechar com chave de ouro
-                if (cutsceneStage === 3 && cutsceneTimer > 280) {
-                    cutsceneText.innerHTML = "❤️ Aqui só você tem espaço! Te amo, minha princesa! ❤️";
-                    cutsceneStage = 4;
+                // Evento 4: Encerramento com a declaração romântica final
+                if (cutsceneFase === 3 && cutsceneTimer > 250) {
+                    cutsceneText.innerHTML = "❤️ Aqui só você entra! Te amo, minha princesa! ❤️";
+                    cutsceneFase = 4;
                 }
             }
 
@@ -481,16 +481,17 @@
             cutsceneScreen.classList.remove('hide');
             gameState = 'CUTSCENE';
             
-            // Posicionamento estratégico para o "Vídeo"
+            // Configuração do cenário do "vídeo"
             boyfriend.x = canvas.width / 2;
-            boyfriend.y = canvas.height / 2 + 50;
+            boyfriend.y = canvas.height / 2 + 60;
             player.x = canvas.width / 2;
-            player.y = canvas.height / 2 - 120; // Ela assiste do topo, segura
+            player.y = canvas.height / 2 - 120; // Ela fica no topo assistindo salva
             
             enemies = [];
             bullets = [];
-            cutsceneStage = 0;
+            cutsceneFase = 0;
             cutsceneTimer = 0;
+            cutsceneText.innerHTML = "";
         });
 
         gameLoop();
