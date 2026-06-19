@@ -10,6 +10,7 @@
             user-select: none;
             -webkit-user-select: none;
             touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
         }
         body {
             margin: 0;
@@ -145,103 +146,37 @@
             margin-bottom: 20px;
         }
 
-        /* TELA DO ENVELOPE REALISTA */
+        /* TELA DA CARTA INTEGRAL (Z-INDEX SUPERIOR PARA NÃO SUMIR) */
         #envelope-screen {
             background: rgba(255, 240, 240, 0.98);
-            z-index: 30;
-        }
-        
-        .envelope-container {
-            position: relative;
-            width: 280px;
-            height: 180px;
-            margin-top: 20px;
-            margin-bottom: 40px;
-            perspective: 1000px;
+            z-index: 50; /* Garante que fica acima do canvas sem bugar */
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            padding-top: 30px;
         }
 
-        .envelope-back {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background-color: #ffccd5;
-            border: 2px solid #ff4d6d;
-            border-radius: 0 0 12px 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-            z-index: 1;
-        }
-
-        .envelope-flap {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 0;
-            height: 0;
-            border-left: 140px solid transparent;
-            border-right: 140px solid transparent;
-            border-top: 90px solid #ffb3c1;
-            transform-origin: top;
-            transition: transform 0.6s ease;
-            z-index: 5;
-        }
-        .envelope-flap::after {
-            content: '';
-            position: absolute;
-            top: -93px;
-            left: -140px;
-            width: 0;
-            height: 0;
-            border-left: 140px solid transparent;
-            border-right: 140px solid transparent;
-            border-top: 92px solid #ff4d6d;
-            z-index: -1;
-        }
-
-        .envelope-container.open .envelope-flap {
-            transform: rotateX(180deg);
-            z-index: 0;
-        }
-
-        .heart-seal {
-            position: absolute;
-            top: 70px;
-            left: 125px;
-            font-size: 30px;
-            z-index: 6;
-            cursor: pointer;
-            transition: opacity 0.3s;
-        }
-        .envelope-container.open .heart-seal {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        /* FOLHA PAUTADA COM LINHAS E SUPORTE A ROLAGEM (SCROLL) */
+        /* FOLHA DE VERDADE PAUTADA - TELA QUASE TODA SEM VAZAMENTOS */
         #letter {
-            position: absolute;
-            bottom: 5px;
-            left: 15px;
-            width: 250px;
-            height: 330px;
+            width: 90%;
+            height: 62%;
             background: #fff;
-            /* Efeito visual das linhas horizontais */
+            /* Linhas azuis horizontais legítimas de caderno */
             background-image: linear-gradient(#e8f1f5 1px, transparent 1px);
             background-size: 100% 24px; 
             border: 1px solid #ddd;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            z-index: 2;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
             padding: 24px 15px 20px 35px; 
-            opacity: 0;
-            transform: translateY(0);
-            transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s ease;
+            margin-bottom: 15px;
             
-            /* Ativando a rolagem perfeita do texto longo */
+            /* Habilita rolagem interna de verdade */
             overflow-y: auto;
             scrollbar-width: thin;
             scrollbar-color: #ff4d6d #fff5f5;
+            z-index: 55;
         }
 
-        /* Linha Vermelha Vertical de Margem do Caderno */
+        /* Linha Vermelha de Margem Esquerda */
         #letter::before {
             content: '';
             position: absolute;
@@ -250,12 +185,7 @@
             width: 1px;
             height: 100%;
             background-color: #ff9999;
-        }
-
-        #letter.pulled {
-            opacity: 1;
-            transform: translateY(-210px) scale(1.05);
-            z-index: 10;
+            pointer-events: none;
         }
 
         #letter p {
@@ -270,16 +200,15 @@
             -webkit-user-select: text;
         }
 
-        .button-group {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-            z-index: 20;
-        }
-        .row-buttons {
+        /* Grupo de botões fixos sempre embaixo da folha */
+        .button-container-fixed {
             display: flex;
             gap: 10px;
+            justify-content: center;
+            width: 100%;
+            margin-top: auto;
+            margin-bottom: 25px;
+            z-index: 60;
         }
     </style>
 </head>
@@ -312,31 +241,21 @@
         </div>
 
         <div id="envelope-screen" class="screen hide">
-            <h1 style="margin-bottom: 40px; font-size: 24px;">Para Minha Princesa 👑</h1>
+            <h1 style="font-size: 22px; margin-top: 0; margin-bottom: 15px;">Para Minha Princesa 👑</h1>
             
-            <div class="envelope-container" id="myEnvelope">
-                <div class="envelope-flap"></div>
-                <div class="heart-seal">❤️</div>
-                
-                <div id="letter">
-                    <p>
-                        Esse joguinho meio bobo foi só para te mostrar que o meu desejo é deixar o nosso amor sempre assim: leve e gostoso. Desde que você chegou, a minha vida ganhou muito mais cor e alegria. Agora, sim, tenho os melhores motivos do mundo para viver e para fazer você se apaixonar por mim um pouquinho mais todos os dias.<br><br>
-                        Estou amando cada conversa nossa, cada risada, cada "bom dia" e "boa noite". Tudo tem sido maravilhoso! Não vejo a hora de podermos estar bem juntinhos, demonstrando esse amor com toques físicos. Cada beijinho vai ser incrivelmente especial. Já fico me pegando pensando no dia em que vou conhecer a sua família, conversar com a sua mãe sobre você, assistir a filmes e bater um papo com o seu pai. Também quero muito que você conheça a minha família; eles são super de boa e tenho certeza de que você vai amar a minha irmã. Quero o nosso momento, a nossa rotina e conhecer vários lugares ao seu lado.<br><br>
-                        Estamos tendo muita paciência para que esses grandes dias cheguem, mas sei que, quando tudo der certo, cada segundo dessa espera terá valido a pena. Não precisa chorar lendo isso, tá? Nem é nada tão emocionante assim, e o joguinho foi só para você distrair um pouco, haha!<br><br>
-                        Sabe, eu me impressiono cada vez mais com a sua maturidade e com a forma como você se desapega de pessoas que não agregam em nada no nosso relacionamento. Você é uma mulher de muito caráter, e tenho a total certeza de que os nossos futuros filhos terão um orgulho imenso da mãe maravilhosa que têm. Admiro cada detalhe em você. Você é a garota mais linda que já vi: seus olhinhos, sua boca, seu cabelo e esse seu jeitinho único de demonstrar amor e não ter medo de se entregar.<br><br>
-                        Eu amo muito você, minha princesa. 🥰
-                    </p>
-                </div>
-                
-                <div class="envelope-back"></div>
+            <div id="letter">
+                <p>
+                    Esse joguinho meio bobo foi só para te mostrar que o meu desejo é deixar o nosso amor sempre assim: leve e gostoso. Desde que você chegou, a minha vida ganhou muito mais cor e alegria. Agora, sim, tenho os melhores motivos do mundo para viver e para fazer você se apaixonar por mim um pouquinho mais todos os dias.<br><br>
+                    Estou amando cada conversa nossa, cada risada, cada "bom dia" e "boa noite". Tudo tem sido maravilhoso! Não vejo a hora de podermos estar bem juntinhos, demonstrando esse amor com toques físicos. Cada beijinho vai ser incrivelmente especial. Já fico me pegando pensando no dia em que vou conhecer a sua família, conversar com a sua mãe sobre você, assistir a filmes e bater um papo com o seu pai. Também quero muito que você conheça a minha família; eles são super de boa e tenho certeza de que você vai amar a minha irmã. Quero o nosso momento, a nossa rotina e conhecer vários lugares ao seu lado.<br><br>
+                    Estamos tendo muita paciência para que esses grandes dias cheguem, mas sei que, quando tudo der certo, cada segundo dessa espera terá valido a pena. Não precisa chorar lendo isso, tá? Nem é nada tão emocionante assim, e o joguinho foi só para você distrair um pouco, haha!<br><br>
+                    Sabe, eu me impressiono cada vez mais com a sua maturidade e com a forma como você se desapega de pessoas que não agregam em nada no nosso relacionamento. Você é uma mulher de muito caráter, e tenho a total certeza de que os nossos futuros filhos terão um orgulho imenso da mãe maravilhosa que têm. Admiro cada detalhe em você. Você é a garota mais linda que já vi: seus olhinhos, sua boca, seu cabelo e esse seu jeitinho único de demonstrar amor e não ter medo de se entregar.<br><br>
+                    Eu amo muito você, minha princesa. 🥰
+                </p>
             </div>
 
-            <div class="button-group">
-                <button id="open-envelope-btn">Abrir Envelope 💌</button>
-                <div class="row-buttons">
-                    <button id="close-envelope-btn" class="hide" style="background-color: #777;">Fechar ↩️</button>
-                    <button id="restart-game-btn" class="hide" style="background-color: #38b000;">Jogar Novamente 🎮</button>
-                </div>
+            <div class="button-container-fixed">
+                <button id="close-envelope-btn" style="background-color: #777; padding: 12px 20px;">Fechar ↩️</button>
+                <button id="restart-game-btn" style="background-color: #38b000; padding: 12px 20px;">Jogar De Novo 🎮</button>
             </div>
         </div>
 
@@ -354,9 +273,7 @@
         const envelopeScreen = document.getElementById('envelope-screen');
         const dialogueBox = document.getElementById('dialogue-box');
         const cutsceneText = document.getElementById('cutscene-text');
-        const myEnvelope = document.getElementById('myEnvelope');
         const letter = document.getElementById('letter');
-        const btnOpen = document.getElementById('open-envelope-btn');
         const btnClose = document.getElementById('close-envelope-btn');
         const btnRestart = document.getElementById('restart-game-btn');
 
@@ -457,7 +374,7 @@
                 this.x = x;
                 this.y = y;
                 this.radius = 12;
-                this.speed = 13; // Balas bem velozes para garantir a segurança defensiva
+                this.speed = 14; // Velocidade alta das balas para segurança
                 let dx = targetX - this.x;
                 let dy = targetY - this.y;
                 let dist = Math.sqrt(dx * dx + dy * dy);
@@ -491,11 +408,6 @@
             victoryScreen.classList.add('hide');
             cutsceneScreen.classList.add('hide');
             envelopeScreen.classList.add('hide');
-            myEnvelope.classList.remove('open');
-            letter.classList.remove('pulled');
-            btnOpen.classList.remove('hide');
-            btnClose.classList.add('hide');
-            btnRestart.classList.add('hide');
             dialogueBox.style.display = 'none';
 
             spawnTimer = 0;
@@ -595,24 +507,23 @@
                 boyfriend.draw();
                 cutsceneTimer++;
 
-                // Passo 0: Cria 100 mulheres bem distantes fora da tela
+                // Passo 0: Invoca as 100 mulheres bem distantes da borda
                 if (cutsceneFase === 0 && cutsceneTimer === 20) {
                     for (let i = 0; i < 100; i++) {
                         let angulo = Math.random() * Math.PI * 2;
-                        let raioSpawn = 460; // Mantidas bem afastadas do centro inicial
+                        let raioSpawn = 460; 
                         let ex = boyfriend.x + Math.cos(angulo) * raioSpawn;
                         let ey = boyfriend.y + Math.sin(angulo) * raioSpawn;
                         
                         let novaMulher = new Enemy(ex, ey, 'mulher');
-                        novaMulher.speed = 1.0; 
+                        novaMulher.speed = 0.95; // Ligeiramente reduzida para proteção absoluta
                         enemies.push(novaMulher);
                     }
                     cutsceneFase = 1;
                 }
 
-                // Passo 1: Metralhadora em 360° implacável
+                // Passo 1: Rajadas automáticas frenéticas
                 if (cutsceneFase === 1) {
-                    // Ritmo ultra-rápido de disparos (a cada 2 quadros) garantindo barreira total
                     if (cutsceneTimer % 2 === 0 && enemies.length > 0) {
                         let alvoAleatorio = enemies[Math.floor(Math.random() * enemies.length)];
                         bullets.push(new Bullet(boyfriend.x, boyfriend.y, alvoAleatorio.x, alvoAleatorio.y));
@@ -623,7 +534,7 @@
                     }
                 }
 
-                // Colisão estrita das balas eliminando a horda
+                // Colisões e atualização física
                 for (let i = bullets.length - 1; i >= 0; i--) {
                     bullets[i].update();
                     bullets[i].draw();
@@ -641,7 +552,7 @@
                     }
                 }
 
-                // Move horda circular em direção a você. Elas somem antes de encostarem devido à alta cadência das balas.
+                // As mulheres andam em 360°, mas são pulverizadas antes de sequer encostarem
                 enemies.forEach(e => {
                     e.update(boyfriend.x, boyfriend.y);
                     e.draw();
@@ -656,6 +567,7 @@
                     gameState = 'ENVELOPE';
                     cutsceneScreen.classList.add('hide');
                     envelopeScreen.classList.remove('hide');
+                    letter.scrollTop = 0; 
                 }
             }
 
@@ -690,29 +602,12 @@
             cutsceneText.innerHTML = "👀 Espera só para ver as gurias vindo...";
         });
 
-        // Controle de Animação do Envelope e Folha Pautada
-        btnOpen.addEventListener('click', () => {
-            myEnvelope.classList.add('open');
-            setTimeout(() => {
-                letter.classList.add('pulled');
-                btnOpen.classList.add('hide');
-                btnClose.classList.remove('hide');
-                btnRestart.classList.remove('hide');
-                letter.scrollTop = 0; // Reseta o scroll para o topo ao abrir
-            }, 600);
-        });
-
+        // Controles de fechamento e reinício fixos na interface
         btnClose.addEventListener('click', () => {
-            letter.classList.remove('pulled');
-            setTimeout(() => {
-                myEnvelope.classList.remove('open');
-                btnClose.classList.add('hide');
-                btnRestart.classList.add('hide');
-                btnOpen.classList.remove('hide');
-            }, 800);
+            envelopeScreen.classList.add('hide');
+            victoryScreen.classList.remove('hide'); // Mantém o estado visual correto
         });
 
-        // Botão para Jogar Novamente
         btnRestart.addEventListener('click', initGame);
 
         gameLoop();
