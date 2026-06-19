@@ -328,14 +328,14 @@
                     <p>
                         Esse joguinho meio bobo foi só para te mostrar que o meu desejo é deixar o nosso amor sempre assim: leve e gostoso. Desde que você chegou, a minha vida ganhou muito mais cor e alegria. Agora, sim, tenho os melhores motivos do mundo para viver e para fazer você se apaixonar por mim um pouquinho mais todos os dias.<br><br>
                         Estou amando cada conversa nossa, cada risada, cada "bom dia" e "boa noite". Tudo tem sido maravilhoso! Não vejo a hora de podermos estar bem juntinhos, demonstrando esse amor com toques físicos. Cada beijinho vai ser incrivelmente especial. Já fico me pegando pensando no dia em que vou conhecer a sua família, conversar com a sua mãe sobre você, assistir a filmes e bater um papo com o seu pai. Também quero muito que você conheça a minha família; eles são super de boa e tenho certeza de que você vai amar a minha irmã. Quero o nosso momento, a nossa rotina e conhecer vários lugares ao seu lado.<br><br>
-                        Estamos tendo muita paciência para que esses grandes dias cheguem, mas sei que, quando tudo der certo, cada segundo dessa espera terá valido a pena. Não precisa chorar lendo isso, tá? Nem é nada tão emocionante assim, e o joguinho foi só para você distrair um pouco, haha!<br><br>
+                        Estamos tendo muita paciência para que esses grandes dias cheguem, mas sei que, quando tudo der certo, cada segundo dessa espera terá valido a pena. Não precisa chorar lendo isso, tá? Nem é nada tão emocionante assim, e o joguinho foi só para você distrair um pouco, hihihi!<br><br>
                         Sabe, eu me impressiono cada vez mais com a sua maturidade e com a forma como você se desapega de pessoas que não agregam em nada no nosso relacionamento. Você é uma mulher de muito caráter, e tenho a total certeza de que os nossos futuros filhos terão um orgulho imenso da mãe maravilhosa que têm. Admiro cada detalhe em você. Você é a garota mais linda que já vi: seus olhinhos, sua boca, seu cabelo e esse seu jeitinho único de demonstrar amor e não ter medo de se entregar.<br><br>
                         Eu amo muito você, minha princesa. 🥰
                     </p>
                 </div>
             </div>
 
-            <!-- Botões Fixos Modificados -->
+            <!-- Botões Fixos -->
             <div class="fixed-footer">
                 <button id="toggle-envelope-btn" onclick="gerenciarCarta()" style="background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);">Abrir Envelope 💌</button>
                 <button id="restart-game-btn" style="background: #38b000;">Jogar De Novo 🎮</button>
@@ -616,7 +616,6 @@
                     let dy = enemies[i].y - player.y;
                     let dist = Math.sqrt(dx * dx + dy * dy);
 
-                    // AJUSTE: Jogadora também ganhou uma folga minúscula para não sofrer hit colado
                     if (dist < enemies[i].radius + player.radius + 2) {
                         enemies.splice(i, 1);
                         lives--;
@@ -671,7 +670,6 @@
                         let dy = bullets[i].y - enemies[j].y;
                         let dist = Math.sqrt(dx * dx + dy * dy);
 
-                        // CORREÇÃO: Morrem um pouquinho bem pouquinho mais longe (Mudado de 15 para 28 de distância)
                         if (dist < enemies[j].radius + 28) {
                             enemies.splice(j, 1);
                             bullets.splice(i, 1);
@@ -731,10 +729,8 @@
             cutsceneText.innerHTML = "👀 Espera só para ver as gurias vindo...";
         });
 
-        // NOVA FUNÇÃO: Gerencia abertura e fechamento dinâmico da carta e muda o texto do botão
         function gerenciarCarta() {
             if (!myEnvelope.classList.contains('open')) {
-                // Abrir
                 myEnvelope.classList.add('open');
                 toggleEnvelopeBtn.innerText = "Fechar Carta ✉️";
                 setTimeout(() => {
@@ -742,7 +738,6 @@
                     envelopeScreen.scrollTo({ top: 150, behavior: 'smooth' });
                 }, 600);
             } else {
-                // Fechar
                 myEnvelope.classList.remove('open');
                 letter.style.display = 'none';
                 toggleEnvelopeBtn.innerText = "Abrir Envelope 💌";
