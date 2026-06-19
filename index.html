@@ -116,26 +116,33 @@
             transform: scale(0.96);
         }
         
-        /* CAIXA DE DIÁLOGO FIXA EMBAIXO NO MEIO */
+        /* COLOQUEI AS FRASES EM CIMA DELE DE NOVO - PEQUENA PARA NÃO ATRAPALHAR */
         #dialogue-box {
             position: absolute;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(255, 255, 255, 0.95);
+            background: white;
             border: 2px solid var(--primary);
-            border-radius: 15px;
-            padding: 10px 18px;
+            border-radius: 10px;
+            padding: 5px 10px;
             font-weight: bold;
-            font-size: 14px;
+            font-size: 12px;
             color: var(--primary);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
             pointer-events: none;
             display: none;
             text-align: center;
             z-index: 40;
-            width: 85%;
-            max-width: 320px;
+            max-width: 150px;
+            white-space: normal;
+            transform: translate(-50%, -100%);
+        }
+        #dialogue-box::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border: 5px solid transparent;
+            border-top-color: white;
         }
         
         #cutscene-text {
@@ -150,14 +157,14 @@
             margin-bottom: 40px;
         }
 
-        /* TELA DO ENVELOPE COM ROLAGEM TOTAL NA TELA */
+        /* TELA DE ENVELOPE INTEIRA EM SCROLL */
         #envelope-screen {
             background: #fffafa;
             z-index: 100;
-            display: block; /* Mudado para permitir rolagem nativa de toda a estrutura */
+            display: block;
             overflow-y: scroll;
             -webkit-overflow-scrolling: touch;
-            padding: 25px 15px 140px 15px; /* Espaço extra embaixo para os botões fixos */
+            padding: 25px 15px 140px 15px;
         }
 
         .envelope-wrapper {
@@ -220,7 +227,7 @@
             opacity: 0;
         }
 
-        /* FOLHA PAUTADA DE CADERNO */
+        /* FOLHA DE CADERNO */
         #letter {
             width: 100%;
             max-width: 380px;
@@ -279,7 +286,7 @@
 <body>
 
     <div id="game-container">
-        <!-- Caixa de Diálogo do Jogo Fixa Embaixo/Meio -->
+        <!-- Caixa de Diálogo Em Cima do Boneco -->
         <div id="dialogue-box"></div>
 
         <!-- Tela de Introdução -->
@@ -309,7 +316,7 @@
             <div id="cutscene-text">👀 Espera só para ver as gurias vindo...</div>
         </div>
 
-        <!-- Tela do Envelope (Toda em Scroll Livre) -->
+        <!-- Tela do Envelope -->
         <div id="envelope-screen" class="screen hide">
             <div class="envelope-wrapper">
                 <h1>para minha princesa</h1>
@@ -324,7 +331,7 @@
                 <div id="letter">
                     <p>
                         Esse joguinho meio bobo foi só para te mostrar que o meu desejo é deixar o nosso amor sempre assim: leve e gostoso. Desde que você chegou, a minha vida ganhou muito mais cor e alegria. Agora, sim, tenho os melhores motivos do mundo para viver e para fazer você se apaixonar por mim um pouquinho mais todos os dias.<br><br>
-                        Estou amando cada conversa nossa, cada risada, cada "bom dia" e "boa noite". Tudo tem sido maravilhoso! Não vejo a hora de podermos estar bem juntinhos, demonstrando esse amor com toques físicos. Cada beijinho vai ser incrivelmente especial. Já fico me pegando pensando no dia em que vou conhecer a sua família, conversar com a sua mãe sobre você, assistir a filmes e bater um papo com o seu pai. Também quero muito que você conheça a minha família; eles são super de boa e tenho certeza de que você vai amar a minha irmã. Quero o nosso momento, a nossa rotina e conhecer vários lugares ao seu lado.<br><br>
+                        Estou amando cada conversa nossa, cada risada, cada "bom dia" e "boa noite". Tudo tem sido maravilhoso! Não vejo a hora de podermos estar bem juntinhos, demonstrando esse amor com toques físicos. Cada beijinho vai ser incrivelmente especial. Já fico me pegando pensando no dia em que vou conhecer a sua família, conversar com a sua mãe sobre você, assistir a filmes e bater um papo com o seu pai. Também quero muito que você conheça a minha família; eles são super de boa e tenho certeza de que você vai amar a minha irmã. Quero o nosso moment, a nossa rotina e conhecer vários lugares ao seu lado.<br><br>
                         Estamos tendo muita paciência para que esses grandes dias cheguem, mas sei que, quando tudo der certo, cada segundo dessa espera terá valido a pena. Não precisa chorar lendo isso, tá? Nem é nada tão emocionante assim, e o joguinho foi só para você distrair um pouco, haha!<br><br>
                         Sabe, eu me impressiono cada vez mais com a sua maturidade e com a forma como você se desapega de pessoas que não agregam em nada no nosso relacionamento. Você é uma mulher de muito caráter, e tenho a total certeza de que os nossos futuros filhos terão um orgulho imenso da mãe maravilhosa que têm. Admiro cada detalhe em você. Você é a garota mais linda que já vi: seus olhinhos, sua boca, seu cabelo e esse seu jeitinho único de demonstrar amor e não ter medo de se entregar.<br><br>
                         Eu amo muito você, minha princesa. 🥰
@@ -332,7 +339,7 @@
                 </div>
             </div>
 
-            <!-- Botões Fixos no rodapé da página -->
+            <!-- Botões Fixos -->
             <div class="fixed-footer">
                 <button id="close-envelope-btn" style="background: #777;">Fechar ↩️</button>
                 <button id="restart-game-btn" style="background: #38b000;">Jogar De Novo 🎮</button>
@@ -522,8 +529,31 @@
             spawnTimer = 0;
         }
 
+        // TRAVA ANTIQUEDA: SE PUSH PARA FORA DA BORDA, PUXA DE VOLTA
+        function posicionarFala() {
+            if (gameState !== 'PLAYING') return;
+            const rect = canvas.getBoundingClientRect();
+            
+            // Posição ideal: em cima da cabeça do namorado
+            let posX = (boyfriend.x / canvas.width) * rect.width;
+            let posY = (boyfriend.y / canvas.height) * rect.height - 35;
+            
+            // Impede que o balão suma pelo lado esquerdo (mínimo de 85px de margem)
+            if (posX < 85) {
+                posX = 85;
+            }
+            // Impede que suma pelo lado direito
+            if (posX > rect.width - 85) {
+                posX = rect.width - 85;
+            }
+
+            dialogueBox.style.left = `${posX}px`;
+            dialogueBox.style.top = `${posY}px`;
+        }
+
         function falarTexto(texto) {
             dialogueBox.innerText = texto;
+            posicionarFala();
             dialogueBox.style.display = 'block';
             
             clearTimeout(dialogueTimer);
@@ -712,7 +742,6 @@
             myEnvelope.classList.add('open');
             setTimeout(() => {
                 letter.style.display = 'block';
-                // Rola a tela inteira suavemente para baixo para focar na carta aberta
                 envelopeScreen.scrollTo({ top: 150, behavior: 'smooth' });
             }, 600);
         }
@@ -722,7 +751,6 @@
             letter.style.display = 'none';
             envelopeScreen.scrollTo({ top: 0, behavior: 'none' });
             gameState = 'INTRO';
-            introScreen.remove('hide'); // Corrige bug de navegação
             introScreen.classList.remove('hide');
             envelopeScreen.classList.add('hide');
         });
