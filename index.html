@@ -294,7 +294,7 @@
 
         <!-- Tela de Game Over -->
         <div id="gameover-screen" class="screen hide">
-            <h1>Poxa, meu amor! 💔</h1>
+            <h1>Uouuuu! 💔</h1>
             <p>Eles chegaram muito perto... Mas eu tenho total confiança na sua mira! Vamos tentar de novo juntinhos?</p>
             <button id="retry-btn">Tentar Novamente 🔄</button>
         </div>
@@ -309,7 +309,7 @@
         <!-- Tela de Overlay da Cutscene -->
         <div id="cutscene-screen" class="screen hide">
             <div class="cutscene-title">Defendendo Meu Amor... 🔥</div>
-            <div id="cutscene-text">👀 Espera só para ver as gurias vindo...</div>
+            <div id="cutscene-text">👀</div>
         </div>
 
         <!-- Tela do Envelope -->
@@ -390,14 +390,14 @@
             3: "Isso aí amor! Começou bem! 🥰",
             6: "Manda esses folgados embora! 😡",
             9: "Minha namorada é braba demais! 😎",
-            12: "Nossa, que mira perfeita, vida! ❤️",
+            12: "Nossa, que mira perfeita! ❤️",
             15: "Quase lá, bota eles pra correr! 🔥",
             18: "Acaba com eles, tá quase lá! 💖"
         };
 
         const frasesErro = [
-            "Amooor?? Cuidado com esses caras! 🤨",
-            "Ei! Sai de perto dela! Manda o dedo nele! 😡"
+            "Amooor?? 🤨",
+            "Ei! Sai de perto dela! 😡"
         ];
 
         class PlayerCharacter {
@@ -564,7 +564,7 @@
                 player.draw();
 
                 spawnTimer++;
-                if (spawnTimer % 65 === 0 && score < 20) {
+                if (spawnTimer % 75 === 0 && score < 20) {
                     let x, y;
                     if (Math.random() < 0.5) {
                         x = Math.random() < 0.5 ? -20 : canvas.width + 20; y = Math.random() * canvas.height;
@@ -645,7 +645,7 @@
                         }
                         
                         let novaMulher = new Enemy(ex, ey, 'mulher');
-                        novaMulher.speed = 1.4; 
+                        novaMulher.speed = 1.8; 
                         enemies.push(novaMulher);
                     }
                     cutsceneFase = 1;
@@ -684,7 +684,7 @@
                 });
 
                 if (cutsceneFase === 2) {
-                    cutsceneText.innerHTML = "😎 <strong>É assim que se faz, hihihi! Matando geral!</strong>";
+                    cutsceneText.innerHTML = "😎 <strong>É assim que se faz, hihihi!</strong>";
                     cutsceneFase = 3;
                 }
 
@@ -726,7 +726,7 @@
             bullets = []; 
             cutsceneFase = 0; 
             cutsceneTimer = 0;
-            cutsceneText.innerHTML = "👀 Espera só para ver as gurias vindo...";
+            cutsceneText.innerHTML = "👀";
         });
 
         function gerenciarCarta() {
